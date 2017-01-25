@@ -2,7 +2,7 @@
  * Created by Vladimirvl on 2017-01-25.
  */
 import React from 'react';
-
+require('./Event');
 let events = {};
 let uid = 0;
 let eventsHistory = {};
