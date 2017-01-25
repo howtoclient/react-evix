@@ -2,11 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="8559b32f-a923-4cf6-9fa8-d44cd43ee7a8" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/GlobalEventEmitter/Event.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gitignore" afterPath="$PROJECT_DIR$/.gitignore" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Counter/CountButton.js" afterPath="$PROJECT_DIR$/src/Counter/CountButton.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/GlobalEventEmitter/GlobalEventEmitter.js" afterPath="$PROJECT_DIR$/src/GlobalEventEmitter/GlobalEventEmitter.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/GlobalEventEmitter/Event.js" afterPath="$PROJECT_DIR$/src/GlobalEventEmitter/Event.js" />
     </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/temp/" />
@@ -45,8 +42,8 @@
       <file leaf-file-name="Event.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/GlobalEventEmitter/Event.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="340">
-              <caret line="26" column="5" selection-start-line="26" selection-start-column="5" selection-end-line="26" selection-end-column="5" />
+            <state relative-caret-position="204">
+              <caret line="12" column="5" selection-start-line="12" selection-start-column="5" selection-end-line="12" selection-end-column="5" />
               <folding />
             </state>
           </provider>
@@ -387,12 +384,12 @@
       <workItem from="1485344680911" duration="659000" />
       <workItem from="1485345416410" duration="4540000" />
       <workItem from="1485375320777" duration="239000" />
-      <workItem from="1485375599603" duration="7384000" />
+      <workItem from="1485375599603" duration="8331000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="12822000" />
+    <option name="totallyTimeSpent" value="13769000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1096" extended-state="6" />
@@ -686,8 +683,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/GlobalEventEmitter/Event.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="340">
-          <caret line="26" column="5" selection-start-line="26" selection-start-column="5" selection-end-line="26" selection-end-column="5" />
+        <state relative-caret-position="204">
+          <caret line="12" column="5" selection-start-line="12" selection-start-column="5" selection-end-line="12" selection-end-column="5" />
           <folding />
         </state>
       </provider>
