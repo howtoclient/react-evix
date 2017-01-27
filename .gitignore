@@ -13,3 +13,4 @@ build
 .DS_Sto
 .env
 npm-debug.log
+.idea/
