@@ -3,18 +3,13 @@
  */
 let uid = 0;
 export default class Event {
+
     constructor(eventData) {
         this._data = {...(eventData || {})};
-        this.__proto__._eventState = this.__proto__._eventState || {};
     }
 
-    set eventState(state) {
-        this._eventState = Object.assign(this._eventState, state);
-    }
-
-    _apply() {
-        this.eventState = this._data;
-        this.onEventStateUpdated();
+    set eventState(eventState) {
+        this.constructor.prototype._eventState = this.constructor.prototype._eventState || {...(eventState || {})};
     }
 
     get eventState() {
@@ -25,11 +20,14 @@ export default class Event {
         return {...this._data};
     }
 
+    dispatch() {
+        this._eventState = Object.assign(this._eventState, this._data);
+        this.onEventStateUpdated(this.eventState);
+    }
+
     onEventStateUpdated() {
     }
 }
-
-//testEvent0.__proto__.isPrototypeOf(testEvent1)
 
 class CustomEvent extends Event {
     eventState = {
@@ -50,13 +48,13 @@ class CustomEventTwo extends Event {
 }
 
 window.testEvent0 = new CustomEvent({value_five: 0});
-window.testEvent0._apply();
+window.testEvent0.dispatch();
 
 window.testEvent1 = new CustomEvent({value_four: 0});
-window.testEvent1._apply();
+window.testEvent1.dispatch();
 
 window.testEvent2 = new CustomEventTwo({two_value_three: 0});
-window.testEvent2._apply();
+window.testEvent2.dispatch();
 
 window.testEvent3 = new CustomEventTwo({two_value_zero: 0});
-window.testEvent3._apply();
+window.testEvent3.dispatch();

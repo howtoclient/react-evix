@@ -5,10 +5,8 @@ import React from 'react';
 require('./Event');
 let events = {};
 let uid = 0;
-let eventsHistory = {};
 
 window.eventsLink = events;
-window.eventsHistory = eventsHistory;
 
 export default class GlobalEventEmitter extends React.Component {
     constructor(props) {
@@ -24,10 +22,6 @@ export default class GlobalEventEmitter extends React.Component {
     }
 
     dispatch(eventName, payload) {
-        eventsHistory[eventName] = {
-            ...(eventsHistory[eventName] || {}),
-            ...payload
-        };
         if (!events[eventName] || !events[eventName].length) {
             return;
         }
@@ -36,18 +30,13 @@ export default class GlobalEventEmitter extends React.Component {
         });
     }
 
-    addEventListener(eventName, handler, runFromHistory) {
-        const historyPayload = eventsHistory[eventName];
+    addEventListener(eventName, handler, runFromHistory) { 
         events[eventName] = events[eventName] || [];
         events[eventName].push({
             _this: this,
             _uid: this._uid,
             _handler: handler
         });
-        if (historyPayload && runFromHistory) {
-            handler(historyPayload);
-        }
-        return historyPayload || null;
     }
 
     removeEventListener(eventName) {
