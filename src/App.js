@@ -1,10 +1,10 @@
-import React, {Component} from 'react';
+import React from 'react';
 import logo from './logo.svg';
 import './App.css';
 import Counter from './Counter/Counter';
-import GlobalEventEmitter from './GlobalEventEmitter/GlobalEventEmitter';
+import EventComponent from './GlobalEventEmitter/EventComponent';
 
-class App extends GlobalEventEmitter {
+class App extends EventComponent {
     state = {
         showCounters: 4,
         counted: 0

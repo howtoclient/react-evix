@@ -2,9 +2,9 @@
  * Created by Vladimirvl on 2017-01-25.
  */
 import React from 'react';
-import GlobalEventEmitter from "../GlobalEventEmitter/GlobalEventEmitter";
+import EventComponent from "../GlobalEventEmitter/EventComponent";
 
-class CountButton extends GlobalEventEmitter {
+class CountButton extends EventComponent {
     render() {
         return (
             <div>

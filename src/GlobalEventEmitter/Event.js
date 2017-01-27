@@ -1,12 +1,16 @@
 /**
  * Created by vladi on 25-Jan-17.
  */
-let uid = 0;
+
+import {dispatchEvent,getUid} from './EventsControl';
+
 export default class Event {
 
     constructor(eventData) {
+        //i don't want to keep the event prototype or constructor for comparing i will create unique id per constructor
+        this.constructor.prototype._uid = this.constructor.prototype._uid || getUid();
         this._data = {...(eventData || {})};
-        this._eventState = undefined;
+        this._eventState = this._uid = undefined;
     }
 
     set eventState(eventState) {
@@ -23,39 +27,11 @@ export default class Event {
 
     dispatch() {
         this.constructor.prototype._eventState = Object.assign(this.constructor.prototype._eventState, this._data);
-        this.onEventStateUpdated(this.eventState);
+        this.onEventStateUpdated(this);
+        dispatchEvent(this);
     }
 
     onEventStateUpdated() {
     }
 }
 
-class CustomEvent extends Event {
-    eventState = {
-        value_one: 0,
-        value_two: 0
-    };
-
-    onEventStateUpdated() {
-        console.log("CustomEventIsUpdated!")
-    }
-}
-
-class CustomEventTwo extends Event {
-    eventState = {
-        two_value_one: 0,
-        two_value_two: 0
-    }
-}
-
-window.testEvent0 = new CustomEvent({value_five: 0});
-window.testEvent0.dispatch();
-
-window.testEvent1 = new CustomEvent({value_four: 0});
-window.testEvent1.dispatch();
-
-window.testEvent2 = new CustomEventTwo({two_value_three: 0});
-window.testEvent2.dispatch();
-
-window.testEvent3 = new CustomEventTwo({two_value_zero: 0});
-window.testEvent3.dispatch();
