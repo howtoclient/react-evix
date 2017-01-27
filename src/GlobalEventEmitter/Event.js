@@ -6,6 +6,7 @@ export default class Event {
 
     constructor(eventData) {
         this._data = {...(eventData || {})};
+        this._eventState = undefined;
     }
 
     set eventState(eventState) {
@@ -13,7 +14,7 @@ export default class Event {
     }
 
     get eventState() {
-        return {...this._eventState};
+        return {...this.constructor.prototype._eventState};
     }
 
     get eventData() {
@@ -21,7 +22,7 @@ export default class Event {
     }
 
     dispatch() {
-        this._eventState = Object.assign(this._eventState, this._data);
+        this.constructor.prototype._eventState = Object.assign(this.constructor.prototype._eventState, this._data);
         this.onEventStateUpdated(this.eventState);
     }
 
