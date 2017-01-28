@@ -3,8 +3,7 @@
  */
 import React from 'react';
 import CountButton from "./CountButton";
-import Event, {eventState} from "./../GlobalEventEmitter/Event";
-
+ 
 class Counter extends React.Component {
     render() {
         return (
@@ -25,37 +24,14 @@ class CustomEventOne extends Event {
         value_two: 0
     };
 
-    onEventStateUpdated() {
-    }
 }
 
 class CustomEventTwo extends Event {
-    static defaultEventState  = {
+    static defaultEventState = {
         two_value_one: 0,
         two_value_two: 0
     };
-    extraFunction(){
-        console.log(this.eventState)
-    }
-    onEventStateUpdated() {
-        console.log("CustomEventTwo IsUpdated!")
-    }
 }
 
 window.CustomEventOne = CustomEventOne;
 window.CustomEventTwo = CustomEventTwo;
-
-/*
-
-window.testEvent0 = new CustomEventOne({value_five: 0});
-window.testEvent0.dispatch();
-
-window.testEvent1 = new CustomEventOne({value_four: 0});
-window.testEvent1.dispatch();
-
-window.testEvent2 = new CustomEventTwo({two_value_three: 0});
-window.testEvent2.dispatch();
-
-window.testEvent3 = new CustomEventTwo({two_value_zero: 0});
-window.testEvent3.dispatch();
-*/

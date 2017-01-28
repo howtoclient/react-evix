@@ -79,5 +79,5 @@ export default class EventComponent extends React.Component {
         this.__listenersList = this.__listenersList.filter(
             ({listenerUid}) => listenerExists(listenerUid)
         );
-    }
+    } 
 }
