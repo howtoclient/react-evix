@@ -9,12 +9,17 @@ import {
     listenerExists
 } from './EventsControl';
 export default class EventListener {
-    constructor(listenerUid) {
+    constructor(listenerUid, onRemoveCallback) {
         this.listenerUid = listenerUid;
+        this._onRemoveCallback = onRemoveCallback || (()=>undefined);
     }
 
     remove() {
+        if (this.isRemoved()) {
+            return;
+        }
         removeEventListenerById(this.listenerUid);
+        this.onRemoveCallback();
         this.onRemoved(this);
         this.onAction(this);
     }

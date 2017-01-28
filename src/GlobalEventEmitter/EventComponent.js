@@ -3,6 +3,7 @@
  */
 import React from 'react';
 import {
+    BasicEvent,
     filterRemovedListeners,
     addEventListener,
     listenerExists,
@@ -10,7 +11,6 @@ import {
     systemSuspendEventListenerById,
     systemRestoreEventListenerById
 } from './EventsControl';
-import Event from './Event';
 import EventListener from './EventListener';
 
 export default class EventComponent extends React.Component {
@@ -21,6 +21,15 @@ export default class EventComponent extends React.Component {
         this.componentWillUnmount = this._componentWillUnmount.bind(this);
         this.__componentDidMount = this.componentDidMount;
         this.componentDidMount = this._componentDidMount.bind(this);
+
+    }
+
+    _updateEventList() {
+        console.log("EventComponent->_updateEventList");
+        this.__listenersList =
+            filterRemovedListeners(
+                this.__listenersList
+            );
     }
 
     _componentDidMount() {
@@ -42,13 +51,12 @@ export default class EventComponent extends React.Component {
     }
 
     addEventListener(event, handler, suspendOnUnMount = false) {
-        if (!event || !handler || !Event.isPrototypeOf(event)) {
+        if (!event || !handler || !BasicEvent.isPrototypeOf(event)) {
             console.warn(this, "Missing or false parameters on addEventListener!");
             return {};
         }
         const listenerUid = addEventListener({
             _active: true,
-            _suspended: false,
             _eventUid: event.uid,
             _handler: handler
         });
@@ -57,19 +65,25 @@ export default class EventComponent extends React.Component {
             eventUid: event._uid,
             suspendOnUnMount: suspendOnUnMount
         });
-        return new EventListener(listenerUid);
+        return new EventListener(
+            listenerUid,
+            this._updateEventList.bind(this)
+        );
     }
 
     removeEventListener(mixed) {
         if (typeof mixed !== 'object') {
             return;
         }
-        if (Event.isPrototypeOf(mixed)) {
-            removeEventListenersByType(mixed._uid,
+        if (BasicEvent.isPrototypeOf(mixed)) {
+            removeEventListenersByType(
+                mixed._uid,
                 this.__listenersList.filter(
                     ({eventUid, listenerUid}) => (
                         eventUid === mixed._uid && listenerExists(listenerUid)
                     )
+                ).map(
+                    ({listenerUid})=>listenerUid
                 )
             )
         }

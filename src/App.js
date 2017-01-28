@@ -13,7 +13,6 @@ class App extends EventComponent {
 
     componentDidMount() {
         const listener = this.addEventListener(ClickEvent, ()=> {
-            (new ClickEvent({counter:0})).dispatch();
             this.forceUpdate();
         });
         listener.onAction = ()=>this.forceUpdate();

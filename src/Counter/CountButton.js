@@ -10,8 +10,7 @@ class CountButton extends React.Component {
             counter : ClickEvent.eventState.counter + counter
         })).dispatch();
     }
-    render() {
-        console.log("CountButton rendered");
+    render() { 
         return (
             <div>
                 <button onClick={() => this.dispatchClickEvent(1)}>
