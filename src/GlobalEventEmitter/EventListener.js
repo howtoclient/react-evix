@@ -19,7 +19,7 @@ export default class EventListener {
             return;
         }
         removeEventListenerById(this.listenerUid);
-        this.onRemoveCallback();
+        this._onRemoveCallback();
         this.onRemoved(this);
         this.onAction(this);
     }

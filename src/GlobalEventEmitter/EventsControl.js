@@ -49,8 +49,9 @@ export const
         if (!listenerExists(listenerUid)) {
             return false;
         }
+        const eventUid = getListenerType(listenerUid);
         removeListener(listenerUid);
-        updateDispatcherRegistryByType(getListenerType(listenerUid));
+        updateDispatcherRegistryByType(eventUid);
         return true;
     },
     suspendEventListenerById = (listenerUid) => {

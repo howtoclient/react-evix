@@ -90,10 +90,11 @@ export default class Event extends BasicEvent {
             _eventUid: this.uid,
             _handler: handler
         });
+        this.constructor.prototype.__listenersList = this.constructor.prototype.__listenersList || [];
         this.constructor.prototype.__listenersList.push(listenerUid);
         return new EventListener(
             listenerUid,
-            this.constructor.updateEventList.bind(this)
+            this.updateEventList.bind(this)
         );
     }
 

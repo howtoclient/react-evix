@@ -4,8 +4,8 @@
 import Event from "../GlobalEventEmitter/Event";
 
 
-export default class ClickEvent extends Event{
-    static defaultEventState={
-            counter : 0
+export default class ClickEvent extends Event {
+    static defaultEventState = {
+        counter: 0
     };
 }
