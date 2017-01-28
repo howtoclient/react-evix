@@ -30,9 +30,9 @@ export const
         return listenerUid;
     },
     dispatchEvent = event => {
-        if (!Event.isPrototypeOf(event) || !dispatchRegistryExists(event._uid)) return;
-        for (var i = 0; i < dispatchRegistry[event._uid].length; i++) {
-            const listenerUid = dispatchRegistry[event._uid][i];
+        if (!Event.isPrototypeOf(event) || !dispatchRegistryExists(event.uid)) return;
+        for (var i = 0; i < dispatchRegistry[event.uid].length; i++) {
+            const listenerUid = dispatchRegistry[event.uid][i];
             !isListenerSuspended(listenerUid) && listenerRegistry[listenerUid]._handler(event);
         }
     },

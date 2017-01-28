@@ -20,7 +20,7 @@ class Counter extends React.Component {
 export default Counter;
 
 class CustomEventOne extends Event {
-    eventState = {
+    static defaultEventState = {
         value_one: 0,
         value_two: 0
     };
@@ -30,11 +30,13 @@ class CustomEventOne extends Event {
 }
 
 class CustomEventTwo extends Event {
-    eventState = {
+    static defaultEventState  = {
         two_value_one: 0,
         two_value_two: 0
     };
-
+    extraFunction(){
+        console.log(this.eventState)
+    }
     onEventStateUpdated() {
         console.log("CustomEventTwo IsUpdated!")
     }
@@ -43,6 +45,7 @@ class CustomEventTwo extends Event {
 window.CustomEventOne = CustomEventOne;
 window.CustomEventTwo = CustomEventTwo;
 
+/*
 
 window.testEvent0 = new CustomEventOne({value_five: 0});
 window.testEvent0.dispatch();
@@ -55,3 +58,4 @@ window.testEvent2.dispatch();
 
 window.testEvent3 = new CustomEventTwo({two_value_zero: 0});
 window.testEvent3.dispatch();
+*/
