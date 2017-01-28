@@ -7,18 +7,16 @@ import {dispatchEvent, getUid} from './EventsControl';
 export default class Event {
     constructor(eventData) {
         //i don't want to keep the event prototype or constructor for comparing i will create unique id per constructor
-        this.constructor.prototype._uid = this.constructor.prototype._uid || getUid();
-        this.eventState = this.constructor.defaultEventState || {};
+        this.constructor.prototype._uid =
+            this.constructor.prototype._uid || getUid();
+        this.constructor.prototype._eventState =
+            this.constructor.prototype._eventState || {...(this.constructor.defaultEventState || {})};
         this._data = {...(eventData || {})};
         this._eventState = this._uid = undefined;
     }
 
     get uid() {
         return this.constructor.prototype._uid;
-    }
-
-    set eventState(eventState) {
-        this.constructor.prototype._eventState = this.constructor.prototype._eventState || {...(eventState || {})};
     }
 
     get eventState() {
@@ -31,7 +29,6 @@ export default class Event {
 
     dispatch() {
         this.constructor.prototype._eventState = Object.assign(this.constructor.prototype._eventState, this._data);
-        this.onEventStateUpdated(this);
         dispatchEvent(this);
     }
 
@@ -41,9 +38,6 @@ export default class Event {
 
     static get uid() {
         return this.prototype._uid || (new this()).uid;
-    }
-
-    onEventStateUpdated() {
     }
 }
 
