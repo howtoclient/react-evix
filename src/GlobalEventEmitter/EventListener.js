@@ -14,22 +14,41 @@ export default class EventListener {
     }
 
     remove() {
-        removeEventListenerById(this.uid);
+        removeEventListenerById(this.listenerUid);
+        this.onRemoved(this);
+        this.onAction(this);
     }
 
     suspend() {
-        suspendEventListenerById(this.uid);
+        suspendEventListenerById(this.listenerUid);
+        this.onSuspend(this);
+        this.onAction(this);
     }
 
     restore() {
-        restoreEventListenerById(this.uid);
+        restoreEventListenerById(this.listenerUid);
+        this.onRestore(this);
+        this.onAction(this);
     }
 
     isSuspended() {
-        return isListenerSuspended(this.uid);
+        return isListenerSuspended(this.listenerUid);
     }
 
     isRemoved() {
-        return !listenerExists(this.uid);
+        return !listenerExists(this.listenerUid);
+    }
+
+    onSuspend() {
+    }
+
+    onRestore() {
+    }
+
+    onRemoved() {
+    }
+
+    onAction() {
+
     }
 }

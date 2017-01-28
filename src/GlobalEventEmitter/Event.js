@@ -2,22 +2,23 @@
  * Created by vladi on 25-Jan-17.
  */
 
-import {dispatchEvent, getUid} from './EventsControl';
+import {dispatchEvent, getUid, BasicEvent} from './EventsControl';
 class EventException {
     constructor(message) {
         this.message = message;
         this.name = "EventException";
     }
 }
-export default class Event {
+export default class Event extends BasicEvent {
     constructor(eventData) {
+        super();
         //i don't want to keep the event prototype or constructor for comparing i will create unique id per constructor
         this.constructor.prototype._uid =
             this.constructor.prototype._uid || getUid();
         this.constructor.prototype._eventState =
             this.constructor.prototype._eventState || {...(this.constructor.defaultEventState || {})};
         this.constructor.prototype._isDispatching =
-            this.constructor.prototype._isDispatching === undefined || false;
+            this.constructor.prototype._isDispatching === undefined ? false : this.constructor.prototype._isDispatching;
         this._data = {...(eventData || {})};
         this._isDispatching = this._eventState = this._uid = undefined;
     }
@@ -36,7 +37,7 @@ export default class Event {
 
     dispatch() {
         if (this.constructor.prototype._isDispatching) {
-            throw new EventException("Double event dispatch at:" + this.constructor.name);
+            throw new EventException("Event-ception - (Event fired withing itself) detected at:" + this.constructor.name);
         }
         this.constructor.prototype._isDispatching = true;
         this.constructor.prototype._eventState = Object.assign(this.constructor.prototype._eventState, this._data);

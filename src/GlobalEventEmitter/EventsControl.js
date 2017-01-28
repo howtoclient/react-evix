@@ -1,11 +1,12 @@
 /**
  * Created by vladi on 27-Jan-17.
  */
-import Event from "./Event";
 let listenerRegistry = {};
 let dispatchRegistry = {};
 let uid = 1;
 
+export class BasicEvent {
+}
 export const
     getUid = ()=> ++uid,
     listenerExists = (listenerUid)=> !!listenerRegistry[listenerUid],
@@ -30,7 +31,7 @@ export const
         return listenerUid;
     },
     dispatchEvent = event => {
-        if (!Event.isPrototypeOf(event) || !dispatchRegistryExists(event.uid)) return;
+        if (!BasicEvent.isPrototypeOf(event.constructor) || !dispatchRegistryExists(event.uid)) return;
         for (var i = 0; i < dispatchRegistry[event.uid].length; i++) {
             const listenerUid = dispatchRegistry[event.uid][i];
             !isListenerSuspended(listenerUid) && listenerRegistry[listenerUid]._handler(event);
@@ -66,3 +67,4 @@ export const
         listenerExists(listenerUid) && listenerRegistry[listenerUid]._active === null && setActiveState(listenerUid, true);
         return true;
     };
+

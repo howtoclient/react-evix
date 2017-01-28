@@ -3,40 +3,23 @@ import logo from './logo.svg';
 import './App.css';
 import Counter from './Counter/Counter';
 import EventComponent from './GlobalEventEmitter/EventComponent';
+import ClickEvent from './events/ClickEvent';
 
 class App extends EventComponent {
     state = {
-        showCounters: 4,
-        counted: 0
+        counted: 0,
+        listener: null
     };
 
-    countClick(eventName, payload) {
-        this.setState({
-            counted: this.state.counted + 1
-        })
-    }
-
-    countClickTwo(eventName, payload) {
-        this.setState({
-            counted: this.state.counted + 2
-        })
-    }
-
-    countClickThree(eventName, payload) {
-        this.setState({
-            counted: this.state.counted + 3
-        })
-    }
-
-    stopEvent() {
-        this.removeEventListener("ClickHappened");
-    }
-
     componentDidMount() {
-        this.addEventListener("ClickHappened", this.countClick);
-        this.addEventListener("ClickHappened_2", this.countClickTwo);
-        this.addEventListener("ClickHappened_3", this.countClickThree);
-        this.addEventListener("StopCounter", this.stopEvent);
+        const listener = this.addEventListener(ClickEvent, ()=> {
+            (new ClickEvent({counter:0})).dispatch();
+            this.forceUpdate();
+        });
+        listener.onAction = ()=>this.forceUpdate();
+        this.setState({
+            listener: listener
+        });
     }
 
     render() {
@@ -50,21 +33,22 @@ class App extends EventComponent {
                     To get started, edit <code>src/App.js</code> and save to reload.
                 </p>
                 <hr />
-                <Counter counted={this.state.counted}/>
+                <Counter/>
                 <hr />
-                <Counter counted={this.state.counted}/>
+                <Counter/>
                 <hr />
-                <Counter counted={this.state.counted}/>
+                <Counter/>
                 <hr />
-                {this.state.showCounters >= 4 ?
-                    <Counter counted={this.state.counted}/>
-                    :
-                    ""
-                }
-                <hr />
-                <button onClick={() => this.setState({showCounters: 3})}>
-                    Hide bottom counter
-                </button>
+                {this.state.listener ?
+                    this.state.listener.isSuspended() ?
+                        <button onClick={() =>  this.state.listener.restore()}>
+                            restore Events
+                        </button>
+                        :
+                        <button onClick={() =>  this.state.listener.suspend()}>
+                            suspend Events
+                        </button>
+                    : "Event not defined yet"}
             </div>
         );
     }

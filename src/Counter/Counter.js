@@ -3,12 +3,13 @@
  */
 import React from 'react';
 import CountButton from "./CountButton";
- 
+import ClickEvent from "./../events/ClickEvent";
+
 class Counter extends React.Component {
-    render() {
+    render() { 
         return (
             <div>
-                { this.props.counted }
+                { ClickEvent.eventState.counter }
                 <hr />
                 <CountButton />
             </div>
@@ -17,21 +18,3 @@ class Counter extends React.Component {
 }
 
 export default Counter;
-
-class CustomEventOne extends Event {
-    static defaultEventState = {
-        value_one: 0,
-        value_two: 0
-    };
-
-}
-
-class CustomEventTwo extends Event {
-    static defaultEventState = {
-        two_value_one: 0,
-        two_value_two: 0
-    };
-}
-
-window.CustomEventOne = CustomEventOne;
-window.CustomEventTwo = CustomEventTwo;

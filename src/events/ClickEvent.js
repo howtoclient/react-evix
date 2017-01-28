@@ -5,7 +5,7 @@ import Event from "../GlobalEventEmitter/Event";
 
 
 export default class ClickEvent extends Event{
-   const defaultEventState={
+    static defaultEventState={
             counter : 0
     };
 }

@@ -2,25 +2,27 @@
  * Created by Vladimirvl on 2017-01-25.
  */
 import React from 'react';
-import EventComponent from "../GlobalEventEmitter/EventComponent";
+import ClickEvent from "./../events/ClickEvent";
 
-class CountButton extends EventComponent {
+class CountButton extends React.Component {
+    dispatchClickEvent(counter) { 
+        (new ClickEvent({
+            counter : ClickEvent.eventState.counter + counter
+        })).dispatch();
+    }
     render() {
+        console.log("CountButton rendered");
         return (
             <div>
-                <button onClick={() => this.dispatch("ClickHappened", {data: "lalala-data"})}>
+                <button onClick={() => this.dispatchClickEvent(1)}>
                     add 1
                 </button>
-                <button onClick={() => this.dispatch("ClickHappened_2", {data: "lalala-data-2"})}>
+                <button onClick={() => this.dispatchClickEvent(2)}>
                     add 2
                 </button>
-                <button onClick={() => this.dispatch("ClickHappened_3", {data: "lalala-data-2"})}>
+                <button onClick={() => this.dispatchClickEvent(3)}>
                     add 3
                 </button>
-                <button onClick={() => this.dispatch("StopCounter")}>
-                    stop event Listener ( +1 )
-                </button>
-
             </div>
         );
     }

@@ -49,7 +49,7 @@ export default class EventComponent extends React.Component {
         const listenerUid = addEventListener({
             _active: true,
             _suspended: false,
-            _eventUid: event._uid,
+            _eventUid: event.uid,
             _handler: handler
         });
         this.__listenersList.push({
@@ -79,5 +79,5 @@ export default class EventComponent extends React.Component {
         this.__listenersList = this.__listenersList.filter(
             ({listenerUid}) => listenerExists(listenerUid)
         );
-    } 
+    }
 }
