@@ -70,11 +70,12 @@ export default class Event extends BasicEvent {
     }
 
     static removeEventListener(eventListener) {
-        if (typeof eventListener !== 'object' || !EventListener.isPrototypeOf(eventListener)) {
+        if (typeof eventListener !== 'object'
+            || !EventListener.isPrototypeOf(eventListener)
+            || this.constructor.prototype.__listenersList.indexOf(eventListener.listenerUid) == -1) {
             return;
         }
         eventListener.remove();
-        this.constructor.updateEventList();
     }
 
     static clearAllDirectEvents() {

@@ -85,13 +85,11 @@ export default class EventComponent extends React.Component {
                 ).map(
                     ({listenerUid})=>listenerUid
                 )
-            )
+            );
+            this._updateEventList();
         }
-        if (EventListener.isPrototypeOf(mixed)) {
+        if (EventListener.isPrototypeOf(mixed) && this.__listenersList.indexOf(mixed.listenerUid)>-1) {
             mixed.remove();
         }
-        this.__listenersList = this.__listenersList.filter(
-            ({listenerUid}) => listenerExists(listenerUid)
-        );
     }
 }
