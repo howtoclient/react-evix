@@ -1,7 +1,7 @@
 {
-  "name": "global-event",
-  "version": "0.1.0",
-  "private": true,
+  "name": "react-global-events",
+  "version": "0.5.0",
+  "private": false,
   "devDependencies": {
     "react-scripts": "0.8.5"
   },
