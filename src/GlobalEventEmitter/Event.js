@@ -2,15 +2,18 @@
  * Created by vladi on 25-Jan-17.
  */
 
-import {dispatchEvent,getUid} from './EventsControl';
+import {dispatchEvent, getUid} from './EventsControl';
 
 export default class Event {
-
     constructor(eventData) {
         //i don't want to keep the event prototype or constructor for comparing i will create unique id per constructor
         this.constructor.prototype._uid = this.constructor.prototype._uid || getUid();
         this._data = {...(eventData || {})};
         this._eventState = this._uid = undefined;
+    }
+
+    get uid() {
+        return this.constructor.prototype._uid;
     }
 
     set eventState(eventState) {
@@ -34,4 +37,15 @@ export default class Event {
     onEventStateUpdated() {
     }
 }
+
+Object.defineProperty(Event, "uid", {
+    get: function () {
+        return this.prototype._uid || (new this()).uid;
+    }
+});
+Object.defineProperty(Event, "eventState", {
+    get: function () {
+        return this.prototype._eventState || (new this()).eventState;
+    }
+});
 
