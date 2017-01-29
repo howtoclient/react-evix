@@ -1,6 +1,6 @@
 {
-  "name": "react-store-events",
-  "version": "0.5.1",
+  "name": "react-event-store",
+  "version": "0.5.2",
   "description": "React events that act like a store",
   "main": "lib/index.js",
   "scripts": {
