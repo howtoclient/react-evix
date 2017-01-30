@@ -13,7 +13,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/howtoclient/react-store-events.git"
+    "url": "git+https://github.com/howtoclient/react-evix.git"
   },
   "keywords": [
     "react",
@@ -46,7 +46,7 @@
   },
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/howtoclient/react-store-events/issues"
+    "url": "https://github.com/howtoclient/react-evix/issues"
   },
-  "homepage": "https://github.com/howtoclient/react-store-events#readme"
+  "homepage": "https://github.com/howtoclient/react-evix#readme"
 }
