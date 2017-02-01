@@ -16,6 +16,12 @@ export const
     removeListener = listenerUid => delete listenerRegistry[listenerUid],
     getListenerType = listenerUid => listenerRegistry[listenerUid]._eventUid,
     filterRemovedListeners = listenerList => listenerList.filter(listenerUid => listenerExists(listenerUid)),
+    isEventStateUpdated = (eventState, data) => {
+        const dataKeys = Object.keys(data);
+        return dataKeys && dataKeys.some(
+                key => (!eventState[key] || eventState[key] !== data[key])
+            );
+    },
     updateDispatcherRegistryByType = (eventUid)=> {
         if (!dispatchRegistryExists(eventUid)) return;
         dispatchRegistry[eventUid] = dispatchRegistry[eventUid].filter(
@@ -30,11 +36,16 @@ export const
         dispatchRegistry[eventUid].push(listenerUid);
         return listenerUid;
     },
-    dispatchEvent = event => {
-        if (!BasicEvent.isPrototypeOf(event.constructor) || !dispatchRegistryExists(event.uid)) return;
-        for (var i = 0; i < dispatchRegistry[event.uid].length; i++) {
-            const listenerUid = dispatchRegistry[event.uid][i];
-            !isListenerSuspended(listenerUid) && listenerRegistry[listenerUid]._handler(event);
+    canFireEventHandler = (stateUpdated, listenerInfo) => {
+        return listenerInfo._active && (!stateUpdated || listenerInfo._onStateUpdate);
+    },
+    dispatchEvent = (event, stateUpdated = false) => {
+        if (!BasicEvent.isPrototypeOf(event.constructor) || !dispatchRegistryExists(event.uid)) {
+            return;
+        }
+        for (let i = 0; i < dispatchRegistry[event.uid].length; i++) {
+            const listenerInfo = listenerRegistry[dispatchRegistry[event.uid][i]];
+            listenerInfo && canFireEventHandler(listenerInfo) && listenerInfo._handler(event);
         }
     },
     removeEventListenersByType = (eventUid, listenersList)=> {
