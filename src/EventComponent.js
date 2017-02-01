@@ -17,9 +17,10 @@ export default class EventComponent extends React.Component {
     constructor(props) {
         super(props);
         this.__listenersList = [];
+        this.__stateTrackers = {};
         this.__componentWillUnmount = this.componentWillUnmount;
-        this.componentWillUnmount = this._componentWillUnmount.bind(this);
         this.__componentDidMount = this.componentDidMount;
+        this.componentWillUnmount = this._componentWillUnmount.bind(this);
         this.componentDidMount = this._componentDidMount.bind(this);
 
     }
@@ -38,6 +39,9 @@ export default class EventComponent extends React.Component {
                 !suspendOnUnMount || systemRestoreEventListenerById(listenerUid)
             )
         );
+        for (let key in this.__stateTrackers) {
+            this.__stateTrackers[key].restore();
+        }
         this.__componentDidMount && this.__componentDidMount();
     }
 
@@ -47,15 +51,51 @@ export default class EventComponent extends React.Component {
                 !suspendOnUnMount || systemSuspendEventListenerById(listenerUid)
             )
         );
+        for (let key in this.__stateTrackers) {
+            this.__stateTrackers[key].suspend();
+        }
         this.__componentWillUnmount && this.__componentWillUnmount();
     }
 
-    addEventListener(event, handler, suspendOnUnMount = false) {
+    unTrackAll() {
+        for (let key in this.__stateTrackers) {
+            this.__stateTrackers[key].remove();
+        }
+        this.__stateTrackers = {};
+    }
+
+    unTrackEventState(event) {
+        if (BasicEvent.isPrototypeOf(event) && this.__stateTrackers[event.uid]) {
+            this.__stateTrackers[event.uid].remove();
+            delete this.__stateTrackers[event.uid];
+        }
+    }
+
+    trackEventState(event) {
+        if (!BasicEvent.isPrototypeOf(event) || this.__stateTrackers[event.uid]) {
+            return;
+        }
+        this.__stateTrackers[event.uid] = new EventListener(
+            addEventListener({
+                _onStateUpdate: true,
+                _active: true,
+                _eventUid: event.uid,
+                _handler: handler
+            })
+        )
+    }
+
+    onEventStateUpdated(event, handler, suspendOnUnMount = false) {
+        return this.addEventListener(event, handler, suspendOnUnMount, true);
+    }
+
+    addEventListener(event, handler, suspendOnUnMount = false, onStateUpdated) {
         if (!event || !handler || !BasicEvent.isPrototypeOf(event)) {
             console.warn(this, "Missing or false parameters on addEventListener!");
             return {};
         }
         const listenerUid = addEventListener({
+            _onStateUpdate: !!onStateUpdated,
             _active: true,
             _eventUid: event.uid,
             _handler: handler
@@ -83,12 +123,12 @@ export default class EventComponent extends React.Component {
                         eventUid === mixed._uid && listenerExists(listenerUid)
                     )
                 ).map(
-                    ({listenerUid})=>listenerUid
+                    ({listenerUid}) => listenerUid
                 )
             );
             this._updateEventList();
         }
-        if (EventListener.isPrototypeOf(mixed) && this.__listenersList.indexOf(mixed.listenerUid)>-1) {
+        if (EventListener.isPrototypeOf(mixed) && this.__listenersList.indexOf(mixed.listenerUid) > -1) {
             mixed.remove();
         }
     }
