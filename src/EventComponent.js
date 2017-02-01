@@ -16,24 +16,25 @@ import EventListener from './EventListener';
 export default class EventComponent extends React.Component {
     constructor(props) {
         super(props);
+        this.__mounted = false;
         this.__listenersList = [];
         this.__stateTrackers = {};
         this.__componentWillUnmount = this.componentWillUnmount;
-        this.__componentDidMount = this.componentDidMount;
-        this.componentWillUnmount = this._componentWillUnmount.bind(this);
-        this.componentDidMount = this._componentDidMount.bind(this);
+        this.__componentWillMount = this.componentWillMount;
+        this.componentWillUnmount = this._componentWillUnmount;
+        this.componentWillMount = this._componentWillMount;
 
     }
 
     _updateEventList() {
-        console.log("EventComponent->_updateEventList");
         this.__listenersList =
             filterRemovedListeners(
                 this.__listenersList
             );
     }
 
-    _componentDidMount() {
+    _componentWillMount() {
+        this.__mounted = true;
         this.__listenersList = filterRemovedListeners(this.__listenersList).filter(
             ({suspendOnUnMount, listenerUid}) => (
                 !suspendOnUnMount || systemRestoreEventListenerById(listenerUid)
@@ -42,10 +43,11 @@ export default class EventComponent extends React.Component {
         for (let key in this.__stateTrackers) {
             this.__stateTrackers[key].restore();
         }
-        this.__componentDidMount && this.__componentDidMount();
+        this.__componentWillMount && this.__componentWillMount();
     }
 
     _componentWillUnmount() {
+        this.__mounted = false;
         this.__listenersList = filterRemovedListeners(this.__listenersList).filter(
             ({suspendOnUnMount, listenerUid}) => (
                 !suspendOnUnMount || systemSuspendEventListenerById(listenerUid)
@@ -78,7 +80,7 @@ export default class EventComponent extends React.Component {
         this.__stateTrackers[event.uid] = new EventListener(
             addEventListener({
                 _onStateUpdate: true,
-                _active: true,
+                _active: this.__mounted,
                 _eventUid: event.uid,
                 _handler: handler
             })
@@ -96,14 +98,14 @@ export default class EventComponent extends React.Component {
         }
         const listenerUid = addEventListener({
             _onStateUpdate: !!onStateUpdated,
-            _active: true,
+            _active: !suspendOnUnMount || this.__mounted,
             _eventUid: event.uid,
             _handler: handler
         });
         this.__listenersList.push({
             listenerUid: listenerUid,
             eventUid: event._uid,
-            suspendOnUnMount: suspendOnUnMount
+            suspendOnUnMount: !!suspendOnUnMount
         });
         return new EventListener(
             listenerUid,
