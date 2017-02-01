@@ -37,7 +37,7 @@ export const
         return listenerUid;
     },
     canFireEventHandler = (stateUpdated, listenerInfo) => {
-        return listenerInfo._active && (!stateUpdated || listenerInfo._onStateUpdate);
+        return listenerInfo._active && (stateUpdated || !listenerInfo._onStateUpdate);
     },
     dispatchEvent = (event, stateUpdated = false) => {
         if (!BasicEvent.isPrototypeOf(event.constructor) || !dispatchRegistryExists(event.uid)) {
