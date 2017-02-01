@@ -9,7 +9,8 @@ import {
     addEventListener,
     removeEventListenersByType,
     listenerExists,
-    filterRemovedListeners
+    filterRemovedListeners,
+    isEventStateUpdated
 } from './EventsControl';
 class EventException {
     constructor(message) {
@@ -56,22 +57,26 @@ export default class Event extends BasicEvent {
             throw new EventException("Event-ception - (Event fired withing itself) detected at:" + this.constructor.name);
         }
         this.constructor.prototype._isDispatching = true;
-        this.constructor.prototype._eventState = Object.assign(this.constructor.prototype._eventState, this._data);
-        dispatchEvent(this);
+        const eventStateUpdate = this._data && isEventStateUpdated(this.constructor.prototype._eventState, this._data);
+        if (eventStateUpdate) {
+            this.constructor.prototype._eventState =
+                Object.assign(this.constructor.prototype._eventState, this._data);
+        }
+        dispatchEvent(this, eventStateUpdate);
         this.constructor.prototype._isDispatching = false;
     }
 
     static updateEventList() {
-        console.log("Event->updateEventList");
         this.constructor.prototype.__listenersList =
             filterRemovedListeners(
-                this.constructor.prototype.__listenersList
+                this.constructor.prototype.__listenersList || []
             );
     }
 
     static removeEventListener(eventListener) {
         if (typeof eventListener !== 'object'
             || !EventListener.isPrototypeOf(eventListener)
+            || !this.constructor.prototype.__listenersList
             || this.constructor.prototype.__listenersList.indexOf(eventListener.listenerUid) == -1) {
             return;
         }
@@ -80,13 +85,21 @@ export default class Event extends BasicEvent {
 
     static clearAllDirectEvents() {
         removeEventListenersByType(
-            this.uid, this.constructor.prototype.__listenersList
+            this.uid, this.constructor.prototype.__listenersList || []
         );
         this.constructor.prototype.__listenersList = [];
     }
 
-    static addEventListener(handler) {
+    static onEventStateUpdated(handler) {
+        return this.addEventListener(handler, true);
+    }
+
+    static addEventListener(handler, onStateUpdated) {
+        if (!handler) {
+            return;
+        }
         const listenerUid = addEventListener({
+            _onStateUpdate: !!onStateUpdated,
             _active: true,
             _eventUid: this.uid,
             _handler: handler
