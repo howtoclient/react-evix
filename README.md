@@ -7,7 +7,7 @@ Share and access eventStores easily while keeping full compatibility with Redux 
 
 ## Table of Contents
 
-- [Instalation](#instalation)
+- [Installation](#installation)
 - [Integration](#integration)
 - [Using Evix](#using-evix)
     - [Configuring Your Events](#configuring-your-event)
@@ -25,7 +25,7 @@ Share and access eventStores easily while keeping full compatibility with Redux 
     - [EventComponent](#eventcomponent)
 
 
-## Instalation
+## Installation
 ```
     npm i react-evix --save
 ```
@@ -40,7 +40,7 @@ I tried my best to make this library as automatic to use as possible and as fast
 However to use this out of the box you still need to know a few things :
 
 ## Configuring Your Events
-To create you own event store simply extend Event and add a static default stor configuration
+To create you own event store simply extend Event and add a static default store configuration
 ```
     import Evix,{Event,EventComponent} from 'react-evix';
 
@@ -50,7 +50,7 @@ To create you own event store simply extend Event and add a static default stor 
         }
     }
 ```
-Thats it! there is nothing more to do but use :)
+That's it! there is nothing more to do but use :)
 And here is how:
 ## Accessing Your Event State
 ```
@@ -93,7 +93,7 @@ If you have never worked with events here is a simple explanation:
     Events dispatched(fired/initiated) will be caught by event listeners(observers) that will run an action(function) in responce :)
 ```
 ## Adding Event Listener Directly
-You can alway add an event listeners directly throgu your extend event constructor using ```.addEventListener``` and it will even return you an ```EventListener```
+You can always add an event listeners directly through your extend event constructor using ```.addEventListener``` and it will even return you an ```EventListener```
 ```
     import MyEvent from './events/MyEvent'; //or wherever you placed it
 
@@ -126,7 +126,7 @@ You can also run removal of ```EventListener``` by passing them to ```.removeEve
 *this will simply run ```.remove()``` on the ```EventListener``` :)
 
 ## Whats An EventComponent
-Well it would be a mess if i just used ```.addEventListner``` on the extended Event so i created ```EventComponent```
+Well it would be a mess if i just used ```.addEventListener``` on the extended Event so i created ```EventComponent```
 Its a React.Component extension with added event related functions:
 First here is how you create ```EventComponent```
 ```
@@ -147,11 +147,11 @@ Simply import and extend, ```EventComponent``` is a valid ```React.Component``` 
 So the things i added:
 ```this.addEventListener(event, handler, suspendOnUnMount = false)```
 Receives:
-- extended Event instance or constructor ( doesnt matter )
+- extended Event instance or constructor ( doesn't matter )
 - a handler function
-- optional: auto-suspend when component unmounts flag ( oh yes :) )
+- optional: auto-suspend when component un-mounts flag ( oh yes :) )
 Returns:
-- ```EventListener``` instace.
+- ```EventListener``` instance.
 
 Example:
 ```
@@ -179,7 +179,7 @@ Example:
 ```this.removeEventListener(Mixed)```
 As it sounds, removed a specific event or a whole group of them by type.
 Receives:
-- instance of ```EventListener``` OR instace of extended Event OR extended Event constructor
+- instance of ```EventListener``` OR instance of extended Event OR extended Event constructor
 Example:
 ```
     import Evix,{Event,EventComponent} from 'react-evix';
@@ -195,7 +195,7 @@ Example:
            this.removeEventListener(myEventListener);
         }
 
-        //if another instace of this component exists its events will NOT BE REMOVED
+        //if another instance of this component exists its events will NOT BE REMOVED
 
         render(){
             return (
@@ -211,7 +211,7 @@ I did like the ability of components to reRender if the Store was updated.To add
 
 ```this.trackEventState(event)``` - adds ```eventState``` tracker  to that event type and runs ```forceUpdate``` when the ```eventState``` is updated
 Receives:
-- extended Event instance or constructor ( doesnt matter )
+- extended Event instance or constructor ( doesn't matter )
 
 Example:
 ```
@@ -234,7 +234,7 @@ Example:
 
 ```this.trackEventState(event)``` - removes passed event ```eventState``` tracker
 Receives:
-- extended Event instance or constructor ( doesnt matter )
+- extended Event instance or constructor ( doesn't matter )
 
 Example:
 ```
@@ -278,18 +278,18 @@ Example:
 We all love a good simple whats where and why guide
 
 ## EventListener
-After you subscribe to event dispather using one of the addEventListeners you will get ```EventListener```
+After you subscribe to event dispatcher using one of the addEventListeners you will get ```EventListener```
 
 - ```EventListener.suspend()``` - pause event listener without removing it
 - ```EventListener.restore()``` - resume existing event listener
-- ```EventListener.remove()``` - remove event listner
+- ```EventListener.remove()``` - remove event listener
 - ```EventListener.isSuspended()``` - returns event listener activity status
 - ```EventListener.isRemoved()``` - returns event listener activity status
 - ```EventListener.onAction()``` - empty function called when ```.suspend() or .restore() or .remove()``` are called ( mainly for debugging )
 
 ## Event
 
-Event (not to be cofuzed with window.Event) is my take on Event with internal SHARED state per extention
+Event (not to be confused with window.Event) is my take on Event with internal SHARED state per extension
 Usage:
 ```
     import Evix,{Event,EventComponent} from 'react-evix';
@@ -335,14 +335,14 @@ methods:
 ```
 *NOTE use EventComponent instead!
 
-- ```removeEventListener(EventListner)``` - recieved ```EventListener``` instance and runs ```.remove()``` on it
+- ```removeEventListener(EventListener)``` - received ```EventListener``` instance and runs ```.remove()``` on it
 ```
     const clearEvent = (eventListener)=>{
         MyEvent.removeEventListener(eventListener)
     }
 ```
 
-- ```clearAllDirectEvents()``` - removed all event listeneres registered with ```Event.addEventListener``` ONLY ( events registered with ```EventComponent```) will not be affected
+- ```clearAllDirectEvents()``` - removed all event listeners registered with ```Event.addEventListener``` ONLY ( events registered with ```EventComponent```) will not be affected
 ```
     const cleanUp = ()=>{
         MyEvent.clearAllDirectEvents()
@@ -364,11 +364,11 @@ Usage:
 ```
 
 methods:
-- ```addEventListener(extended Event , function , autosuspend)``` - adds event listener under current ```EventComponent``` Instance
+- ```addEventListener(extended Event , function , autoSuspend)``` - adds event listener under current ```EventComponent``` Instance
     Receives:
-    - extended Event instance or constructor of Event ( doesnt matter )
+    - extended Event instance or constructor of Event ( doesn't matter )
     - a handler function
-    - optional: auto-suspend when component unmounts flag ( oh yes :) )
+    - optional: auto-suspend when component un-mounts flag ( oh yes :) )
     Returns ```EventListener``` instance
 
 Usage:
@@ -390,7 +390,7 @@ Usage:
 
 - ```removeEventListener(mixed)``` - As it sounds, removed a specific event or a whole group of them by type.
 Receives:
-    - instance of ```EventListener``` OR instace of extended Event OR extended Event constructor
+    - instance of ```EventListener``` OR instance of extended Event OR extended Event constructor
 
 Usage:
 ```
@@ -407,7 +407,7 @@ Usage:
             this.removeEventListener(myEventListener);
         }
 
-        //if another instace of this component exists its events will NOT BE REMOVED
+        //if another instance of this component exists its events will NOT BE REMOVED
 
         render(){
             return ( <div /> );
@@ -416,11 +416,11 @@ Usage:
 ```
 *NOTE: All the event functions are Instance controlled so you cant remove events from other Instances( use ```EventListener.remove()``` )
 
-- ```onEventStateUpdated(extended Event , function , autosuspend)``` - adds event listener under current ```EventComponent``` Instance that will only be fired IF eventState actually changes
+- ```onEventStateUpdated(extended Event , function , autoSuspend)``` - adds event listener under current ```EventComponent``` Instance that will only be fired IF eventState actually changes
     Receives:
-    - extended Event instance or constructor of Event( doesnt matter )
+    - extended Event instance or constructor of Event( doesn't matter )
     - a handler function
-    - optional: auto-suspend when component unmounts flag ( oh yes :) )
+    - optional: auto-suspend when component un-mounts flag ( oh yes :) )
     Returns ```EventListener``` instance
 
 Usage:
@@ -443,7 +443,7 @@ Usage:
 
 - ```trackEventState(extended Event)``` - adds ```.eventState``` update listener to current ```EventComponent``` Instance that will run ```.forceUpdate()```. Automatically suspended when component is not mounted and restored when it is mounted.
     Receives:
-    - extended Event instance or constructor of Event( doesnt matter )
+    - extended Event instance or constructor of Event( doesn't matter )
 
 Usage:
 ```
@@ -462,7 +462,7 @@ Usage:
 
 - ```unTrackEventState(extended Event)``` - removes ```.eventState``` update listener from current ```EventComponent``` Instance.
     Receives:
-    - extended Event instance or constructor of Event( doesnt matter )
+    - extended Event instance or constructor of Event( doesn't matter )
 
 Usage:
 ```
