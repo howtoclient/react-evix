@@ -350,19 +350,23 @@ methods:
 ```
 
 ## EventComponent
-Extended ```React.Component``` to add/remove/suspend and auto suspend/restore event listeners
+Extended ```React.Component``` to add/remove/suspend and auto suspend/restore event listeners and track ```eventState``` changes
 
 Usage:
 ```
     import Evix,{Event,EventComponent} from 'react-evix';
+    import MyEvent from './events/MyEvent'; //or wherever you placed it
 
     export default class MyComponent extends EventComponent{
+        static trackEvents = [
+            MyEvent
+        ]
         render(){
             return (<div />);
         }
     }
 ```
-
+static ```trackEvents``` - an array that will be used to initiate ```.trackEvent``` inside the constructor, can be done manually but this is cleaner code :)
 methods:
 - ```addEventListener(extended Event , function , autoSuspend)``` - adds event listener under current ```EventComponent``` Instance
     Receives:

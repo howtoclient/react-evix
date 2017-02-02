@@ -23,7 +23,9 @@ export default class EventComponent extends React.Component {
         this.__componentWillMount = this.componentWillMount;
         this.componentWillUnmount = this._componentWillUnmount;
         this.componentWillMount = this._componentWillMount;
-
+        this.trackEvents && this.trackEvents.length && this.trackEvents.forEach(
+            event => this.trackEventState(event)
+        )
     }
 
     _updateEventList() {
