@@ -131,7 +131,7 @@ export default class EventComponent extends React.Component {
             );
             updateEventList.call(this);
         }
-        if (EventListener.isPrototypeOf(mixed) && this.__listenersList.indexOf(mixed.listenerUid) > -1) {
+        if (mixed instanceof EventListener && this.__listenersList.indexOf(mixed.listenerUid) > -1) {
             mixed.remove();
         }
     }

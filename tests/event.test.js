@@ -5,6 +5,7 @@
 import Event, {__testGetEventListenerRegistry} from '../src/Event';
 import EventListener from '../src/EventListener';
 import {
+    EventException,
     __testGetCurrentUid,
     __testGetCurrentListenerRegistry,
     __testGetCurrentDispatchRegistry
@@ -13,9 +14,18 @@ const noop = () => undefined;
 
 const testEventListenerRegistry = __testGetEventListenerRegistry(),
     testGlobalListenerRegistry = __testGetCurrentListenerRegistry(),
-    testGlobalDispatchRegistry = __testGetCurrentDispatchRegistry();
-
-
+    testGlobalDispatchRegistry = __testGetCurrentDispatchRegistry(),
+    getEventListenerInfo = (uid, onStateUpdate) => ({
+        _onStateUpdate: !!onStateUpdate,
+        _active: true,
+        _eventUid: uid,
+        _handler: noop
+    });
+test('initial tests', () => {
+    expect(__testGetEventListenerRegistry()).toEqual({});
+    expect(__testGetCurrentListenerRegistry()).toEqual({});
+    expect(__testGetCurrentDispatchRegistry()).toEqual({});
+});
 test('Test basic Event onEventStateUpdated', () => {
     class TestEvent extends Event {
         static defaultEventState = {
@@ -27,6 +37,7 @@ test('Test basic Event onEventStateUpdated', () => {
             stateVariable: "stateVariable"
         }
     }
+    TestEvent.onEventStateUpdated(null);
     const testEventListener = TestEvent.onEventStateUpdated(noop),
         testEventListener2 = TestEvent.onEventStateUpdated(noop),
         testEventListener3 = TestEvent2.onEventStateUpdated(noop);
@@ -40,24 +51,9 @@ test('Test basic Event onEventStateUpdated', () => {
         [TestEvent2.uid]: [testEventListener3.listenerUid]
     });
     expect(testGlobalListenerRegistry).toEqual({
-        [testEventListener.listenerUid]: {
-            _onStateUpdate: true,
-            _active: true,
-            _eventUid: TestEvent.uid,
-            _handler: noop
-        },
-        [testEventListener2.listenerUid]: {
-            _onStateUpdate: true,
-            _active: true,
-            _eventUid: TestEvent.uid,
-            _handler: noop
-        },
-        [testEventListener3.listenerUid]: {
-            _onStateUpdate: true,
-            _active: true,
-            _eventUid: TestEvent2.uid,
-            _handler: noop
-        }
+        [testEventListener.listenerUid]: getEventListenerInfo(TestEvent.uid, true),
+        [testEventListener2.listenerUid]: getEventListenerInfo(TestEvent.uid, true),
+        [testEventListener3.listenerUid]: getEventListenerInfo(TestEvent2.uid, true),
     });
     testEventListener.remove();
     expect(testEventListenerRegistry).toEqual({
@@ -69,18 +65,8 @@ test('Test basic Event onEventStateUpdated', () => {
         [TestEvent2.uid]: [testEventListener3.listenerUid]
     });
     expect(testGlobalListenerRegistry).toEqual({
-        [testEventListener2.listenerUid]: {
-            _onStateUpdate: true,
-            _active: true,
-            _eventUid: TestEvent.uid,
-            _handler: noop
-        },
-        [testEventListener3.listenerUid]: {
-            _onStateUpdate: true,
-            _active: true,
-            _eventUid: TestEvent2.uid,
-            _handler: noop
-        }
+        [testEventListener2.listenerUid]: getEventListenerInfo(TestEvent.uid, true),
+        [testEventListener3.listenerUid]: getEventListenerInfo(TestEvent2.uid, true)
     });
     TestEvent.clearAllDirectEvents();
     TestEvent2.clearAllDirectEvents();
@@ -90,6 +76,7 @@ test('Test basic Event onEventStateUpdated', () => {
 });
 
 test('Test basic Event addEventListener', () => {
+
     class TestEvent extends Event {
         static defaultEventState = {
             stateVariable: "stateVariable"
@@ -100,6 +87,7 @@ test('Test basic Event addEventListener', () => {
             stateVariable: "stateVariable"
         }
     }
+    TestEvent.addEventListener(null);
     const testEventListener = TestEvent.addEventListener(noop),
         testEventListener2 = TestEvent.addEventListener(noop),
         testEventListener3 = TestEvent2.addEventListener(noop);
@@ -113,24 +101,9 @@ test('Test basic Event addEventListener', () => {
         [TestEvent2.uid]: [testEventListener3.listenerUid]
     });
     expect(testGlobalListenerRegistry).toEqual({
-        [testEventListener.listenerUid]: {
-            _onStateUpdate: false,
-            _active: true,
-            _eventUid: TestEvent.uid,
-            _handler: noop
-        },
-        [testEventListener2.listenerUid]: {
-            _onStateUpdate: false,
-            _active: true,
-            _eventUid: TestEvent.uid,
-            _handler: noop
-        },
-        [testEventListener3.listenerUid]: {
-            _onStateUpdate: false,
-            _active: true,
-            _eventUid: TestEvent2.uid,
-            _handler: noop
-        }
+        [testEventListener.listenerUid]: getEventListenerInfo(TestEvent.uid),
+        [testEventListener2.listenerUid]: getEventListenerInfo(TestEvent.uid),
+        [testEventListener3.listenerUid]: getEventListenerInfo(TestEvent2.uid)
     });
     testEventListener.remove();
     expect(testEventListenerRegistry).toEqual({
@@ -142,18 +115,8 @@ test('Test basic Event addEventListener', () => {
         [TestEvent2.uid]: [testEventListener3.listenerUid]
     });
     expect(testGlobalListenerRegistry).toEqual({
-        [testEventListener2.listenerUid]: {
-            _onStateUpdate: false,
-            _active: true,
-            _eventUid: TestEvent.uid,
-            _handler: noop
-        },
-        [testEventListener3.listenerUid]: {
-            _onStateUpdate: false,
-            _active: true,
-            _eventUid: TestEvent2.uid,
-            _handler: noop
-        }
+        [testEventListener2.listenerUid]: getEventListenerInfo(TestEvent.uid),
+        [testEventListener3.listenerUid]: getEventListenerInfo(TestEvent2.uid)
     });
     TestEvent.clearAllDirectEvents();
     TestEvent2.clearAllDirectEvents();
@@ -161,18 +124,102 @@ test('Test basic Event addEventListener', () => {
     expect(testGlobalDispatchRegistry).toEqual({});
     expect(testGlobalListenerRegistry).toEqual({});
 });
-/*test('Test Extended Event removeEventListener', () => {
- class TestEvent extends Event {
- static defaultEventState = {
- stateVariable: "stateVariable"
- }
- }
- class TestEvent2 extends Event {
- static defaultEventState = {
- stateVariable: "stateVariable2"
- }
- }
- });*/
+
+test('Test basic Event removeEventListener', () => {
+    class TestEvent extends Event {
+        static defaultEventState = {
+            stateVariable: "stateVariable"
+        }
+    }
+    class TestEvent2 extends Event {
+        static defaultEventState = {
+            stateVariable: "stateVariable"
+        }
+    }
+    const testEventListener = TestEvent.onEventStateUpdated(noop);
+    expect(testEventListener instanceof EventListener).toBe(true);
+
+    expect(testEventListenerRegistry).toEqual({
+        [TestEvent.uid]: [testEventListener.listenerUid]
+    });
+    expect(testGlobalDispatchRegistry).toEqual({
+        [TestEvent.uid]: [testEventListener.listenerUid]
+    });
+    expect(testGlobalListenerRegistry).toEqual({
+        [testEventListener.listenerUid]: getEventListenerInfo(TestEvent.uid, true)
+    });
+
+    TestEvent.removeEventListener(testEventListener);
+    expect(testEventListenerRegistry).toEqual({});
+    expect(testGlobalDispatchRegistry).toEqual({});
+    expect(testGlobalListenerRegistry).toEqual({});
+
+    const testEventListener2 = TestEvent2.addEventListener(noop);
+
+    expect(testEventListenerRegistry).toEqual({
+        [TestEvent2.uid]: [testEventListener2.listenerUid]
+    });
+    expect(testGlobalDispatchRegistry).toEqual({
+        [TestEvent2.uid]: [testEventListener2.listenerUid]
+    });
+    expect(testGlobalListenerRegistry).toEqual({
+        [testEventListener2.listenerUid]: getEventListenerInfo(TestEvent2.uid)
+    });
+
+    TestEvent.removeEventListener(testEventListener2);
+    expect(testEventListenerRegistry).toEqual({
+        [TestEvent2.uid]: [testEventListener2.listenerUid]
+    });
+    expect(testGlobalDispatchRegistry).toEqual({
+        [TestEvent2.uid]: [testEventListener2.listenerUid]
+    });
+    expect(testGlobalListenerRegistry).toEqual({
+        [testEventListener2.listenerUid]: getEventListenerInfo(TestEvent2.uid)
+    });
+
+    TestEvent2.removeEventListener(testEventListener2);
+    expect(testEventListenerRegistry).toEqual({});
+    expect(testGlobalDispatchRegistry).toEqual({});
+    expect(testGlobalListenerRegistry).toEqual({});
+
+});
+test('Test Event-Seption exception', () => {
+    class TestEvent extends Event {
+        static defaultEventState = {
+            stateVariable: "stateVariable"
+        }
+    }
+    const eventListener = TestEvent.addEventListener(() => {
+        (new TestEvent()).dispatch();
+    });
+    const dispatcher = new TestEvent();
+    expect(dispatcher.dispatch.bind(dispatcher)).toThrowError(EventException);
+    TestEvent.clearAllDirectEvents();
+});
+
+test('Test Event dispatch functionality', () => {
+    class TestEvent extends Event {
+        static defaultEventState = {
+            stateVariable: "stateVariable"
+        }
+    }
+    let standardCallback = jest.fn();
+    let onEventStateUpdateCallback = jest.fn();
+    TestEvent.addEventListener(standardCallback);
+    TestEvent.onEventStateUpdated(onEventStateUpdateCallback);
+
+    expect((new TestEvent()).dispatch().eventState).toEqual({
+        stateVariable: "stateVariable"
+    });
+    expect(standardCallback).toHaveBeenCalled();
+    expect(onEventStateUpdateCallback).not.toHaveBeenCalled();
+    expect((new TestEvent({stateVariable: "updatedStateVariable"})).dispatch().eventState).toEqual({
+        stateVariable: "updatedStateVariable"
+    });
+    expect(standardCallback).toHaveBeenCalledTimes(2);
+    expect(onEventStateUpdateCallback).toHaveBeenCalled();
+    TestEvent.clearAllDirectEvents();
+});
 
 test('Test basic Event functionality', () => {
     class TestEvent extends Event {
@@ -228,7 +275,7 @@ test('Test immutable eventState and eventData', () => {
 
 });
 
-test('Test eventState saparations', () => {
+test('Test eventState separations', () => {
     class TestEvent extends Event {
         static defaultEventState = {
             stateVariable: "stateVariable"

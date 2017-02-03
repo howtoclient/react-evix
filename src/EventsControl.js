@@ -48,17 +48,18 @@ export const
         dispatchRegistry[eventUid].push(listenerUid);
         return listenerUid;
     },
-    canFireEventHandler = (stateUpdated, listenerInfo) => {
+    canFireEventHandler = (listenerInfo, stateUpdated) => {
         return listenerInfo._active && (stateUpdated || !listenerInfo._onStateUpdate);
     },
     dispatchEvent = (event, stateUpdated = false) => {
         if (!BasicEvent.isPrototypeOf(event.constructor) || !dispatchRegistryExists(event.uid)) {
             return;
         }
-        for (let i = 0; i < dispatchRegistry[event.uid].length; i++) {
-            const listenerInfo = listenerRegistry[dispatchRegistry[event.uid][i]];
-            listenerInfo && canFireEventHandler(listenerInfo) && listenerInfo._handler(event);
-        }
+
+        dispatchRegistry[event.uid].forEach(listenerUid => {
+            const listenerInfo = listenerRegistry[listenerUid];
+            listenerInfo && canFireEventHandler(listenerInfo, stateUpdated) && listenerInfo._handler(event);
+        });
     },
     removeEventListenersByType = (eventUid, listenersList) => {
         if (dispatchRegistryExists(eventUid)) {

@@ -18,6 +18,9 @@ const ListenerRegistry = {},
             filterRemovedListeners(
                 ListenerRegistry[uid] || []
             );
+        if (!ListenerRegistry[uid].length) {
+            delete ListenerRegistry[uid];
+        }
     };
 export const __testGetEventListenerRegistry = () => typeof __JEST_TEST__ != 'undefined' && ListenerRegistry;
 export default class Event extends BasicEvent {
@@ -69,10 +72,9 @@ export default class Event extends BasicEvent {
     }
 
     static removeEventListener(eventListener) {
-        if (typeof eventListener !== 'object'
-            || !EventListener.isPrototypeOf(eventListener)
+        if (!eventListener instanceof EventListener
             || !ListenerRegistry[this.uid]
-            || ListenerRegistry[this.uid].indexOf(eventListener.listenerUid) == -1) {
+            || ListenerRegistry[this.uid].indexOf(eventListener.listenerUid) === -1) {
             return;
         }
         eventListener.remove();
