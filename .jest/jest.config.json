@@ -1,5 +1,15 @@
 {
   "testPathDirs": [
-    "<rootDir>/src"
+    "<rootDir>/tests"
+  ],
+  "collectCoverage": true,
+  "collectCoverageFrom": [
+    "**/src/Event.js"
+  ],
+  "globals": {
+    "__JEST_TEST__": true
+  },
+  "coverageReporters": [
+    "json"
   ]
 }
