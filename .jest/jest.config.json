@@ -4,7 +4,7 @@
   ],
   "collectCoverage": true,
   "collectCoverageFrom": [
-    "**/src/Event.js"
+    "**/src/EventListener.js"
   ],
   "globals": {
     "__JEST_TEST__": true
