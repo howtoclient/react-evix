@@ -3,16 +3,19 @@
  */
 let listenerRegistry = {};
 let dispatchRegistry = {};
-let uid = 1;
+let uid = 0;
 
 export class BasicEvent {
 }
 export const
-    getUid = ()=> ++uid,
-    listenerExists = (listenerUid)=> !!listenerRegistry[listenerUid],
-    dispatchRegistryExists = (eventUid)=> !!dispatchRegistry[eventUid],
-    isListenerSuspended = (listenerUid)=> !listenerRegistry[listenerUid] || !listenerRegistry[listenerUid]._active,
-    setActiveState = (listenerUid, newState)=> (listenerRegistry[listenerUid]._active = newState),
+    __testGetCurrentUid = () => typeof __JEST_TEST__ != 'undefined' && uid,
+    __testGetCurrentListenerRegistry = () => typeof __JEST_TEST__ != 'undefined' && listenerRegistry,
+    __testGetCurrentDispatchRegistry = () => typeof __JEST_TEST__ != 'undefined' && dispatchRegistry,
+    getUid = () => ++uid,
+    listenerExists = (listenerUid) => !!listenerRegistry[listenerUid],
+    dispatchRegistryExists = (eventUid) => !!dispatchRegistry[eventUid],
+    isListenerSuspended = (listenerUid) => !listenerRegistry[listenerUid] || !listenerRegistry[listenerUid]._active,
+    setActiveState = (listenerUid, newState) => (listenerRegistry[listenerUid]._active = newState),
     removeListener = listenerUid => delete listenerRegistry[listenerUid],
     getListenerType = listenerUid => listenerRegistry[listenerUid]._eventUid,
     filterRemovedListeners = listenerList => listenerList.filter(listenerUid => listenerExists(listenerUid)),
@@ -22,13 +25,13 @@ export const
                 key => (!eventState[key] || eventState[key] !== data[key])
             );
     },
-    updateDispatcherRegistryByType = (eventUid)=> {
+    updateDispatcherRegistryByType = (eventUid) => {
         if (!dispatchRegistryExists(eventUid)) return;
         dispatchRegistry[eventUid] = dispatchRegistry[eventUid].filter(
             listenerUid => listenerExists(listenerUid)
         )
     },
-    addEventListener = (eventInfo)=> {
+    addEventListener = (eventInfo) => {
         const eventUid = eventInfo._eventUid,
             listenerUid = getUid();
         listenerRegistry[listenerUid] = eventInfo;
@@ -48,7 +51,7 @@ export const
             listenerInfo && canFireEventHandler(listenerInfo) && listenerInfo._handler(event);
         }
     },
-    removeEventListenersByType = (eventUid, listenersList)=> {
+    removeEventListenersByType = (eventUid, listenersList) => {
         if (dispatchRegistryExists(eventUid)) {
             for (var i = 0; i < listenersList.length; i++) {
                 removeListener(listenersList[i]);
@@ -68,14 +71,14 @@ export const
     suspendEventListenerById = (listenerUid) => {
         listenerExists(listenerUid) && setActiveState(listenerUid, false);
     },
-    restoreEventListenerById = (listenerUid)=> {
+    restoreEventListenerById = (listenerUid) => {
         listenerExists(listenerUid) && setActiveState(listenerUid, true);
     },
     systemSuspendEventListenerById = (listenerUid) => {
         listenerExists(listenerUid) && listenerRegistry[listenerUid]._active === true && setActiveState(listenerUid, null);
         return true;
     },
-    systemRestoreEventListenerById = (listenerUid)=> {
+    systemRestoreEventListenerById = (listenerUid) => {
         listenerExists(listenerUid) && listenerRegistry[listenerUid]._active === null && setActiveState(listenerUid, true);
         return true;
     };
