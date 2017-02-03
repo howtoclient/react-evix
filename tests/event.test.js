@@ -2,7 +2,7 @@
  * Created by vladi on 02-Feb-17.
  */
 
-import Event from '../src/Event';
+import Event, {__testGetEventListenerRegistry} from '../src/Event';
 import EventListener from '../src/EventListener';
 import {
     __testGetCurrentUid,
@@ -11,7 +11,12 @@ import {
 } from '../src/EventsControl';
 const noop = () => undefined;
 
-test('Test Extended Event addEventListener and removeEventListener', () => {
+const testEventListenerRegistry = __testGetEventListenerRegistry(),
+    testGlobalListenerRegistry = __testGetCurrentListenerRegistry(),
+    testGlobalDispatchRegistry = __testGetCurrentDispatchRegistry();
+
+
+test('Test basic Event onEventStateUpdated', () => {
     class TestEvent extends Event {
         static defaultEventState = {
             stateVariable: "stateVariable"
@@ -19,18 +24,155 @@ test('Test Extended Event addEventListener and removeEventListener', () => {
     }
     class TestEvent2 extends Event {
         static defaultEventState = {
-            stateVariable: "stateVariable2"
+            stateVariable: "stateVariable"
         }
     }
-    const testEventListener = TestEvent.addEventListener(noop);
+    const testEventListener = TestEvent.onEventStateUpdated(noop),
+        testEventListener2 = TestEvent.onEventStateUpdated(noop),
+        testEventListener3 = TestEvent2.onEventStateUpdated(noop);
     expect(testEventListener instanceof EventListener).toBe(true);
-
-    const testEventListener2 = TestEvent2.addEventListener(noop);
-
-
-    console.log(__testGetCurrentListenerRegistry());
-    console.log(__testGetCurrentDispatchRegistry());
+    expect(testEventListenerRegistry).toEqual({
+        [TestEvent.uid]: [testEventListener.listenerUid, testEventListener2.listenerUid],
+        [TestEvent2.uid]: [testEventListener3.listenerUid]
+    });
+    expect(testGlobalDispatchRegistry).toEqual({
+        [TestEvent.uid]: [testEventListener.listenerUid, testEventListener2.listenerUid],
+        [TestEvent2.uid]: [testEventListener3.listenerUid]
+    });
+    expect(testGlobalListenerRegistry).toEqual({
+        [testEventListener.listenerUid]: {
+            _onStateUpdate: true,
+            _active: true,
+            _eventUid: TestEvent.uid,
+            _handler: noop
+        },
+        [testEventListener2.listenerUid]: {
+            _onStateUpdate: true,
+            _active: true,
+            _eventUid: TestEvent.uid,
+            _handler: noop
+        },
+        [testEventListener3.listenerUid]: {
+            _onStateUpdate: true,
+            _active: true,
+            _eventUid: TestEvent2.uid,
+            _handler: noop
+        }
+    });
+    testEventListener.remove();
+    expect(testEventListenerRegistry).toEqual({
+        [TestEvent.uid]: [testEventListener2.listenerUid],
+        [TestEvent2.uid]: [testEventListener3.listenerUid]
+    });
+    expect(testGlobalDispatchRegistry).toEqual({
+        [TestEvent.uid]: [testEventListener2.listenerUid],
+        [TestEvent2.uid]: [testEventListener3.listenerUid]
+    });
+    expect(testGlobalListenerRegistry).toEqual({
+        [testEventListener2.listenerUid]: {
+            _onStateUpdate: true,
+            _active: true,
+            _eventUid: TestEvent.uid,
+            _handler: noop
+        },
+        [testEventListener3.listenerUid]: {
+            _onStateUpdate: true,
+            _active: true,
+            _eventUid: TestEvent2.uid,
+            _handler: noop
+        }
+    });
+    TestEvent.clearAllDirectEvents();
+    TestEvent2.clearAllDirectEvents();
+    expect(testEventListenerRegistry).toEqual({});
+    expect(testGlobalDispatchRegistry).toEqual({});
+    expect(testGlobalListenerRegistry).toEqual({});
 });
+
+test('Test basic Event addEventListener', () => {
+    class TestEvent extends Event {
+        static defaultEventState = {
+            stateVariable: "stateVariable"
+        }
+    }
+    class TestEvent2 extends Event {
+        static defaultEventState = {
+            stateVariable: "stateVariable"
+        }
+    }
+    const testEventListener = TestEvent.addEventListener(noop),
+        testEventListener2 = TestEvent.addEventListener(noop),
+        testEventListener3 = TestEvent2.addEventListener(noop);
+    expect(testEventListener instanceof EventListener).toBe(true);
+    expect(testEventListenerRegistry).toEqual({
+        [TestEvent.uid]: [testEventListener.listenerUid, testEventListener2.listenerUid],
+        [TestEvent2.uid]: [testEventListener3.listenerUid]
+    });
+    expect(testGlobalDispatchRegistry).toEqual({
+        [TestEvent.uid]: [testEventListener.listenerUid, testEventListener2.listenerUid],
+        [TestEvent2.uid]: [testEventListener3.listenerUid]
+    });
+    expect(testGlobalListenerRegistry).toEqual({
+        [testEventListener.listenerUid]: {
+            _onStateUpdate: false,
+            _active: true,
+            _eventUid: TestEvent.uid,
+            _handler: noop
+        },
+        [testEventListener2.listenerUid]: {
+            _onStateUpdate: false,
+            _active: true,
+            _eventUid: TestEvent.uid,
+            _handler: noop
+        },
+        [testEventListener3.listenerUid]: {
+            _onStateUpdate: false,
+            _active: true,
+            _eventUid: TestEvent2.uid,
+            _handler: noop
+        }
+    });
+    testEventListener.remove();
+    expect(testEventListenerRegistry).toEqual({
+        [TestEvent.uid]: [testEventListener2.listenerUid],
+        [TestEvent2.uid]: [testEventListener3.listenerUid]
+    });
+    expect(testGlobalDispatchRegistry).toEqual({
+        [TestEvent.uid]: [testEventListener2.listenerUid],
+        [TestEvent2.uid]: [testEventListener3.listenerUid]
+    });
+    expect(testGlobalListenerRegistry).toEqual({
+        [testEventListener2.listenerUid]: {
+            _onStateUpdate: false,
+            _active: true,
+            _eventUid: TestEvent.uid,
+            _handler: noop
+        },
+        [testEventListener3.listenerUid]: {
+            _onStateUpdate: false,
+            _active: true,
+            _eventUid: TestEvent2.uid,
+            _handler: noop
+        }
+    });
+    TestEvent.clearAllDirectEvents();
+    TestEvent2.clearAllDirectEvents();
+    expect(testEventListenerRegistry).toEqual({});
+    expect(testGlobalDispatchRegistry).toEqual({});
+    expect(testGlobalListenerRegistry).toEqual({});
+});
+/*test('Test Extended Event removeEventListener', () => {
+ class TestEvent extends Event {
+ static defaultEventState = {
+ stateVariable: "stateVariable"
+ }
+ }
+ class TestEvent2 extends Event {
+ static defaultEventState = {
+ stateVariable: "stateVariable2"
+ }
+ }
+ });*/
 
 test('Test basic Event functionality', () => {
     class TestEvent extends Event {
@@ -140,6 +282,18 @@ test('Test Extended Event constructor definitions', () => {
     expect(TestEvent.onEventStateUpdated).not.toBe(undefined);
     expect(TestEvent.dispatch).toBe(undefined);
 
+    newEvent.dispatch();
+
+    expect(newEvent._isDispatching).toBe(undefined);
+    expect(newEvent._eventState).toBe(undefined);
+    expect(newEvent._uid).toBe(undefined);
+
+    expect(newEvent.removeEventListener).toBe(undefined);
+    expect(newEvent.addEventListener).toBe(undefined);
+    expect(newEvent.clearAllDirectEvents).toBe(undefined);
+    expect(newEvent.onEventStateUpdated).toBe(undefined);
+    expect(newEvent.dispatch).not.toBe(undefined);
+
     TestEvent.addEventListener(noop);
 
     expect(TestEvent._isDispatching).toBe(undefined);
@@ -160,6 +314,18 @@ test('Test Extended Event Instance definitions', () => {
         }
     }
     const newEvent = new TestEvent();
+
+    expect(newEvent._isDispatching).toBe(undefined);
+    expect(newEvent._eventState).toBe(undefined);
+    expect(newEvent._uid).toBe(undefined);
+
+    expect(newEvent.removeEventListener).toBe(undefined);
+    expect(newEvent.addEventListener).toBe(undefined);
+    expect(newEvent.clearAllDirectEvents).toBe(undefined);
+    expect(newEvent.onEventStateUpdated).toBe(undefined);
+    expect(newEvent.dispatch).not.toBe(undefined);
+
+    newEvent.dispatch();
 
     expect(newEvent._isDispatching).toBe(undefined);
     expect(newEvent._eventState).toBe(undefined);

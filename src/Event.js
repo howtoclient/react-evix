@@ -19,7 +19,7 @@ const ListenerRegistry = {},
                 ListenerRegistry[uid] || []
             );
     };
-export const __getListenerRegistry = () => typeof __JEST_TEST__ != 'undefined' && ListenerRegistry;
+export const __testGetEventListenerRegistry = () => typeof __JEST_TEST__ != 'undefined' && ListenerRegistry;
 export default class Event extends BasicEvent {
     constructor(eventData) {
         super();

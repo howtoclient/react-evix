@@ -35,7 +35,10 @@ export const
         if (!dispatchRegistryExists(eventUid)) return;
         dispatchRegistry[eventUid] = dispatchRegistry[eventUid].filter(
             listenerUid => listenerExists(listenerUid)
-        )
+        );
+        if (!dispatchRegistry[eventUid].length) {
+            delete dispatchRegistry[eventUid];
+        }
     },
     addEventListener = (eventInfo) => {
         const eventUid = eventInfo._eventUid,
