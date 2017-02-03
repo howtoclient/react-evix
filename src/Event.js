@@ -9,21 +9,17 @@ import {
     addEventListener,
     removeEventListenersByType,
     filterRemovedListeners,
-    isEventStateUpdated
+    isEventStateUpdated,
+    EventException
 } from './EventsControl';
-class EventException {
-    constructor(message) {
-        this.message = message;
-        this.name = "EventException";
-    }
-}
-const updateEventList = () => {
-    this.__listenersList =
-        filterRemovedListeners(
-            this.__listenersList || []
-        );
-};
-
+const ListenerRegistry = {},
+    updateEventList = (uid) => {
+        ListenerRegistry[uid] =
+            filterRemovedListeners(
+                ListenerRegistry[this.uid] || []
+            );
+    };
+export const __getListenerRegistry = () => typeof __JEST_TEST__ != 'undefined' && ListenerRegistry;
 export default class Event extends BasicEvent {
     constructor(eventData) {
         super();
@@ -36,14 +32,13 @@ export default class Event extends BasicEvent {
             this.constructor.prototype._isDispatching === undefined ? false : this.constructor.prototype._isDispatching;
         this._data = {...(eventData || {})};
         //remove references from Instances
-        this.__listenersList =
-            this.clearAllDirectEvents =
-                this.onEventStateUpdated =
-                    this.removeEventListener =
-                        this.addEventListener =
-                            this._isDispatching =
-                                this._eventState =
-                                    this._uid = undefined;
+        this.clearAllDirectEvents =
+            this.onEventStateUpdated =
+                this.removeEventListener =
+                    this.addEventListener =
+                        this._isDispatching =
+                            this._eventState =
+                                this._uid = undefined;
     }
 
     get uid() {
@@ -76,8 +71,8 @@ export default class Event extends BasicEvent {
     static removeEventListener(eventListener) {
         if (typeof eventListener !== 'object'
             || !EventListener.isPrototypeOf(eventListener)
-            || !this.__listenersList
-            || this.__listenersList.indexOf(eventListener.listenerUid) == -1) {
+            || !ListenerRegistry[this.uid]
+            || ListenerRegistry[this.uid].indexOf(eventListener.listenerUid) == -1) {
             return;
         }
         eventListener.remove();
@@ -85,9 +80,9 @@ export default class Event extends BasicEvent {
 
     static clearAllDirectEvents() {
         removeEventListenersByType(
-            this.uid, this.__listenersList || []
+            this.uid, ListenerRegistry[this.uid] || []
         );
-        this.__listenersList = [];
+        ListenerRegistry[this.uid] = [];
     }
 
     static onEventStateUpdated(handler) {
@@ -104,11 +99,11 @@ export default class Event extends BasicEvent {
             _eventUid: this.uid,
             _handler: handler
         });
-        this.__listenersList = this.__listenersList || [];
-        this.__listenersList.push(listenerUid);
+        ListenerRegistry[this.uid] = ListenerRegistry[this.uid] || [];
+        ListenerRegistry[this.uid].push(listenerUid);
         return new EventListener(
             listenerUid,
-            updateEventList.bind(this)
+            updateEventList.bind(null, this.uid)
         );
     }
 

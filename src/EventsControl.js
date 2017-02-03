@@ -7,6 +7,12 @@ let uid = 0;
 
 export class BasicEvent {
 }
+export class EventException {
+    constructor(message) {
+        this.message = message;
+        this.name = "EventException";
+    }
+}
 export const
     __testGetCurrentUid = () => typeof __JEST_TEST__ != 'undefined' && uid,
     __testGetCurrentListenerRegistry = () => typeof __JEST_TEST__ != 'undefined' && listenerRegistry,

@@ -118,7 +118,6 @@ test('Test Extended Event constructor definitions', () => {
         }
     }
 
-    expect(TestEvent.__listenersList).toBe(undefined);
     expect(TestEvent._isDispatching).toBe(undefined);
     expect(TestEvent._eventState).toBe(undefined);
     expect(TestEvent._uid).toBe(undefined);
@@ -131,7 +130,6 @@ test('Test Extended Event constructor definitions', () => {
 
     const newEvent = new TestEvent();
 
-    expect(TestEvent.__listenersList).toBe(undefined);
     expect(TestEvent._isDispatching).toBe(undefined);
     expect(TestEvent._eventState).toBe(undefined);
     expect(TestEvent._uid).toBe(undefined);
@@ -144,13 +142,11 @@ test('Test Extended Event constructor definitions', () => {
 
     TestEvent.addEventListener(noop);
 
-    expect(TestEvent.__listenersList).not.toBe(undefined);
     expect(TestEvent._isDispatching).toBe(undefined);
     expect(TestEvent._eventState).toBe(undefined);
     expect(TestEvent._uid).toBe(undefined);
 
-    console.error("MOVE __listenersList TO FOLLOW OBJECT!")
-    expect(TestEvent.removeEventListener).toEqual([__testGetCurrentUid()]);
+    expect(TestEvent.removeEventListener).not.toBe(undefined);
     expect(TestEvent.addEventListener).not.toBe(undefined);
     expect(TestEvent.clearAllDirectEvents).not.toBe(undefined);
     expect(TestEvent.onEventStateUpdated).not.toBe(undefined);
@@ -165,7 +161,6 @@ test('Test Extended Event Instance definitions', () => {
     }
     const newEvent = new TestEvent();
 
-    expect(newEvent.__listenersList).toBe(undefined);
     expect(newEvent._isDispatching).toBe(undefined);
     expect(newEvent._eventState).toBe(undefined);
     expect(newEvent._uid).toBe(undefined);
@@ -178,7 +173,6 @@ test('Test Extended Event Instance definitions', () => {
 
     TestEvent.addEventListener(noop);
 
-    expect(newEvent.__listenersList).toBe(undefined);
     expect(newEvent._isDispatching).toBe(undefined);
     expect(newEvent._eventState).toBe(undefined);
     expect(newEvent._uid).toBe(undefined);
