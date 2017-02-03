@@ -20,20 +20,14 @@ export default class EventListener {
         }
         removeEventListenerById(this.listenerUid);
         this._onRemoveCallback();
-        this.onRemoved(this);
-        this.onAction(this);
     }
 
     suspend() {
         suspendEventListenerById(this.listenerUid);
-        this.onSuspend(this);
-        this.onAction(this);
     }
 
     restore() {
         restoreEventListenerById(this.listenerUid);
-        this.onRestore(this);
-        this.onAction(this);
     }
 
     isSuspended() {
@@ -42,18 +36,5 @@ export default class EventListener {
 
     isRemoved() {
         return !listenerExists(this.listenerUid);
-    }
-
-    onSuspend() {
-    }
-
-    onRestore() {
-    }
-
-    onRemoved() {
-    }
-
-    onAction() {
-
     }
 }
