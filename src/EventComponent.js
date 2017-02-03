@@ -3,6 +3,7 @@
  */
 import React from 'react';
 import {
+    getUid,
     BasicEvent,
     filterRemovedListeners,
     addEventListener,
@@ -12,7 +13,12 @@ import {
     systemRestoreEventListenerById
 } from './EventsControl';
 import EventListener from './EventListener';
-
+const updateEventList = () => {
+    this.__listenersList =
+        filterRemovedListeners(
+            this.__listenersList
+        );
+};
 export default class EventComponent extends React.Component {
     constructor(props) {
         super(props);
@@ -26,13 +32,6 @@ export default class EventComponent extends React.Component {
         this.trackEvents && this.trackEvents.length && this.trackEvents.forEach(
             event => this.trackEventState(event)
         )
-    }
-
-    _updateEventList() {
-        this.__listenersList =
-            filterRemovedListeners(
-                this.__listenersList
-            );
     }
 
     _componentWillMount() {
@@ -111,7 +110,7 @@ export default class EventComponent extends React.Component {
         });
         return new EventListener(
             listenerUid,
-            this._updateEventList.bind(this)
+            updateEventList.bind(this)
         );
     }
 
@@ -130,7 +129,7 @@ export default class EventComponent extends React.Component {
                     ({listenerUid}) => listenerUid
                 )
             );
-            this._updateEventList();
+            updateEventList.call(this);
         }
         if (EventListener.isPrototypeOf(mixed) && this.__listenersList.indexOf(mixed.listenerUid) > -1) {
             mixed.remove();

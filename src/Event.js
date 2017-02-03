@@ -10,13 +10,13 @@ import {
     removeEventListenersByType,
     filterRemovedListeners,
     isEventStateUpdated,
-    EventException
+    EventException,
 } from './EventsControl';
 const ListenerRegistry = {},
     updateEventList = (uid) => {
         ListenerRegistry[uid] =
             filterRemovedListeners(
-                ListenerRegistry[this.uid] || []
+                ListenerRegistry[uid] || []
             );
     };
 export const __getListenerRegistry = () => typeof __JEST_TEST__ != 'undefined' && ListenerRegistry;
@@ -82,7 +82,7 @@ export default class Event extends BasicEvent {
         removeEventListenersByType(
             this.uid, ListenerRegistry[this.uid] || []
         );
-        ListenerRegistry[this.uid] = [];
+        delete ListenerRegistry[this.uid];
     }
 
     static onEventStateUpdated(handler) {
