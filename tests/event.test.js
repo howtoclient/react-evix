@@ -22,6 +22,7 @@ const testEventListenerRegistry = __testGetEventListenerRegistry(),
         _handler: noop
     });
 test('initial tests', () => {
+    expect(__testGetCurrentUid()).toEqual(0);
     expect(__testGetEventListenerRegistry()).toEqual({});
     expect(__testGetCurrentListenerRegistry()).toEqual({});
     expect(__testGetCurrentDispatchRegistry()).toEqual({});
@@ -208,17 +209,27 @@ test('Test Event dispatch functionality', () => {
     TestEvent.addEventListener(standardCallback);
     TestEvent.onEventStateUpdated(onEventStateUpdateCallback);
 
+    const testDispatcher = new TestEvent();
     expect((new TestEvent()).dispatch().eventState).toEqual({
         stateVariable: "stateVariable"
     });
     expect(standardCallback).toHaveBeenCalled();
+    expect(standardCallback).toBeCalledWith(testDispatcher);
     expect(onEventStateUpdateCallback).not.toHaveBeenCalled();
-    expect((new TestEvent({stateVariable: "updatedStateVariable"})).dispatch().eventState).toEqual({
+
+    const testStateDispatcher = new TestEvent({stateVariable: "updatedStateVariable"});
+    expect(testStateDispatcher.dispatch().eventState).toEqual({
         stateVariable: "updatedStateVariable"
     });
     expect(standardCallback).toHaveBeenCalledTimes(2);
     expect(onEventStateUpdateCallback).toHaveBeenCalled();
+    expect(onEventStateUpdateCallback).toBeCalledWith(testStateDispatcher);
+    expect(onEventStateUpdateCallback).not.toBeCalledWith(testDispatcher);
     TestEvent.clearAllDirectEvents();
+
+    (new TestEvent()).dispatch();
+    expect(standardCallback).toHaveBeenCalledTimes(2);
+    expect(onEventStateUpdateCallback).toHaveBeenCalledTimes(1);
 });
 
 test('Test basic Event functionality', () => {
