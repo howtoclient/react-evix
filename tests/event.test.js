@@ -206,10 +206,15 @@ test('Test Event dispatch functionality', () => {
     }
     let standardCallback = jest.fn();
     let onEventStateUpdateCallback = jest.fn();
-    TestEvent.addEventListener(standardCallback);
-    TestEvent.onEventStateUpdated(onEventStateUpdateCallback);
+    const standardListener = TestEvent.addEventListener(standardCallback);
+    const onUpdateListener = TestEvent.onEventStateUpdated(onEventStateUpdateCallback);
 
     const testDispatcher = new TestEvent();
+    const testStateDispatcher = new TestEvent({stateVariable: "updatedStateVariable"});
+    const testStateDispatcher2 = new TestEvent({stateVariable: "moreUpdatedStateVariable"});
+    const testStateDispatcher3 = new TestEvent({stateVariable: "eventMoreUpdatedStateVariable"});
+    const testStateDispatcher4 = new TestEvent({stateVariable: "finalEventMoreUpdatedStateVariable"});
+
     expect((new TestEvent()).dispatch().eventState).toEqual({
         stateVariable: "stateVariable"
     });
@@ -217,7 +222,7 @@ test('Test Event dispatch functionality', () => {
     expect(standardCallback).toBeCalledWith(testDispatcher);
     expect(onEventStateUpdateCallback).not.toHaveBeenCalled();
 
-    const testStateDispatcher = new TestEvent({stateVariable: "updatedStateVariable"});
+
     expect(testStateDispatcher.dispatch().eventState).toEqual({
         stateVariable: "updatedStateVariable"
     });
@@ -225,11 +230,26 @@ test('Test Event dispatch functionality', () => {
     expect(onEventStateUpdateCallback).toHaveBeenCalled();
     expect(onEventStateUpdateCallback).toBeCalledWith(testStateDispatcher);
     expect(onEventStateUpdateCallback).not.toBeCalledWith(testDispatcher);
-    TestEvent.clearAllDirectEvents();
 
-    (new TestEvent()).dispatch();
+    standardListener.suspend();
+    onUpdateListener.suspend();
+    testStateDispatcher2.dispatch();
     expect(standardCallback).toHaveBeenCalledTimes(2);
     expect(onEventStateUpdateCallback).toHaveBeenCalledTimes(1);
+
+    standardListener.restore();
+    onUpdateListener.restore();
+    testStateDispatcher3.dispatch();
+    expect(standardCallback).toHaveBeenCalledTimes(3);
+    expect(onEventStateUpdateCallback).toHaveBeenCalledTimes(2);
+
+    standardListener.remove();
+    onUpdateListener.remove();
+    standardListener.restore();
+    onUpdateListener.restore();
+    testStateDispatcher4.dispatch();
+    expect(standardCallback).toHaveBeenCalledTimes(3);
+    expect(onEventStateUpdateCallback).toHaveBeenCalledTimes(2);
 });
 
 test('Test basic Event functionality', () => {
