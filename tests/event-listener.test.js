@@ -23,7 +23,8 @@ test('initial tests', () => {
 });
 
 test('test EventListener defenitions', () => {
-    const eventListener = TestEvent.addEventListener(noop);
+
+    const eventListener = new EventListener();
     expect(eventListener instanceof EventListener).toBe(true);
     expect(eventListener.remove).not.toEqual(undefined);
     expect(eventListener.suspend).not.toEqual(undefined);
@@ -45,6 +46,10 @@ test('test EventListener functionality', () => {
     eventListener.restore();
     expect(eventListener.isSuspended()).toEqual(false);
     expect(eventListener.isRemoved()).toEqual(false);
+
+    eventListener.remove();
+    expect(eventListener.isSuspended()).toEqual(true);
+    expect(eventListener.isRemoved()).toEqual(true);
 
     eventListener.remove();
     expect(eventListener.isSuspended()).toEqual(true);

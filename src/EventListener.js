@@ -11,7 +11,7 @@ import {
 export default class EventListener {
     constructor(listenerUid, onRemoveCallback) {
         this.listenerUid = listenerUid;
-        this._onRemoveCallback = onRemoveCallback || (()=>undefined);
+        this._onRemoveCallback = onRemoveCallback;
     }
 
     remove() {
@@ -19,7 +19,7 @@ export default class EventListener {
             return;
         }
         removeEventListenerById(this.listenerUid);
-        this._onRemoveCallback();
+        this._onRemoveCallback && this._onRemoveCallback();
     }
 
     suspend() {

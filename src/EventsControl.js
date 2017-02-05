@@ -63,9 +63,7 @@ export const
     },
     removeEventListenersByType = (eventUid, listenersList) => {
         if (dispatchRegistryExists(eventUid)) {
-            for (var i = 0; i < listenersList.length; i++) {
-                removeListener(listenersList[i]);
-            }
+            listenersList.forEach(listenerUid => removeListener(listenersList));
             updateDispatcherRegistryByType(eventUid);
         }
     },
