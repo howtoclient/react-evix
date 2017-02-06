@@ -1,6 +1,7 @@
 /**
  * Created by vladi on 25-Jan-17.
  */
+//TODO: add event filtering by name
 import EventListener from './EventListener';
 import {
     dispatchEvent,
