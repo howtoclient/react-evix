@@ -4,7 +4,7 @@
   ],
   "collectCoverage": true,
   "collectCoverageFrom": [
-    "**/src/EventsControl.js"
+    "**/src/*.js"
   ],
   "globals": {
     "__JEST_TEST__": true
