@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/howtoclient/react-evix.svg?branch=master)](https://travis-ci.org/howtoclient/react-evix)[![npm version](https://badge.fury.io/js/react-evix.svg)](https://badge.fury.io/js/react-evix)[![codecov](https://codecov.io/gh/okonet/react-evix/branch/master/graph/badge.svg)](https://codecov.io/gh/okonet/react-evix)
+[![Build Status](https://travis-ci.org/howtoclient/react-evix.svg?branch=master)](https://travis-ci.org/howtoclient/react-evix) [![npm version](https://badge.fury.io/js/react-evix.svg)](https://badge.fury.io/js/react-evix) [![codecov](https://codecov.io/gh/howtoclient/react-evix/branch/master/graph/badge.svg)](https://codecov.io/gh/howtoclient/react-evix)
 
 ## Evix library
 A simpler way to work with stores events and react.
