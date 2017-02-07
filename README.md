@@ -1,4 +1,4 @@
-## Evix library - **version 0.6.0 was not yet tested!
+## Evix library
 A simpler way to work with stores events and react.
 
 Use event constructor as the Store and avoid reducers and renders overhead.
