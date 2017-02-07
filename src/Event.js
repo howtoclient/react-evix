@@ -1,6 +1,7 @@
 /**
  * Created by vladi on 25-Jan-17.
  */
+//TODO: add event filtering by name
 import EventListener from './EventListener';
 import {
     dispatchEvent,
@@ -8,22 +9,25 @@ import {
     BasicEvent,
     addEventListener,
     removeEventListenersByType,
-    listenerExists,
     filterRemovedListeners,
-    isEventStateUpdated
+    isEventStateUpdated,
+    EventException,
 } from './EventsControl';
-class EventException {
-    constructor(message) {
-        this.message = message;
-        this.name = "EventException";
-    }
-}
+const ListenerRegistry = {},
+    updateEventList = (uid) => {
+        ListenerRegistry[uid] =
+            filterRemovedListeners(
+                ListenerRegistry[uid] || []
+            );
+        if (!ListenerRegistry[uid].length) {
+            delete ListenerRegistry[uid];
+        }
+    };
+export const __testGetEventListenerRegistry = () => typeof __JEST_TEST__ != 'undefined' && ListenerRegistry;
 export default class Event extends BasicEvent {
     constructor(eventData) {
         super();
         //i don't want to keep the event prototype or constructor for comparing i will create unique id per constructor
-        this.constructor.prototype.__listenersList =
-            this.constructor.prototype.__listenersList || [];
         this.constructor.prototype._uid =
             this.constructor.prototype._uid || getUid();
         this.constructor.prototype._eventState =
@@ -31,8 +35,9 @@ export default class Event extends BasicEvent {
         this.constructor.prototype._isDispatching =
             this.constructor.prototype._isDispatching === undefined ? false : this.constructor.prototype._isDispatching;
         this._data = {...(eventData || {})};
-        this.updateEventList =
-            this.__listenersList =
+        //remove references from Instances
+        this.clearAllDirectEvents =
+            this.onEventStateUpdated =
                 this.removeEventListener =
                     this.addEventListener =
                         this._isDispatching =
@@ -64,20 +69,13 @@ export default class Event extends BasicEvent {
         }
         dispatchEvent(this, eventStateUpdate);
         this.constructor.prototype._isDispatching = false;
-    }
-
-    static updateEventList() {
-        this.constructor.prototype.__listenersList =
-            filterRemovedListeners(
-                this.constructor.prototype.__listenersList || []
-            );
+        return this;
     }
 
     static removeEventListener(eventListener) {
-        if (typeof eventListener !== 'object'
-            || !EventListener.isPrototypeOf(eventListener)
-            || !this.constructor.prototype.__listenersList
-            || this.constructor.prototype.__listenersList.indexOf(eventListener.listenerUid) == -1) {
+        if (!eventListener instanceof EventListener
+            || !ListenerRegistry[this.uid]
+            || ListenerRegistry[this.uid].indexOf(eventListener.listenerUid) === -1) {
             return;
         }
         eventListener.remove();
@@ -85,9 +83,9 @@ export default class Event extends BasicEvent {
 
     static clearAllDirectEvents() {
         removeEventListenersByType(
-            this.uid, this.constructor.prototype.__listenersList || []
+            this.uid, ListenerRegistry[this.uid] || []
         );
-        this.constructor.prototype.__listenersList = [];
+        delete ListenerRegistry[this.uid];
     }
 
     static onEventStateUpdated(handler) {
@@ -104,16 +102,16 @@ export default class Event extends BasicEvent {
             _eventUid: this.uid,
             _handler: handler
         });
-        this.constructor.prototype.__listenersList = this.constructor.prototype.__listenersList || [];
-        this.constructor.prototype.__listenersList.push(listenerUid);
+        ListenerRegistry[this.uid] = ListenerRegistry[this.uid] || [];
+        ListenerRegistry[this.uid].push(listenerUid);
         return new EventListener(
             listenerUid,
-            this.updateEventList.bind(this)
+            updateEventList.bind(null, this.uid)
         );
     }
 
     static get eventState() {
-        return this.prototype._eventState || (new this()).eventState;
+        return {...(this.prototype._eventState || (new this()).eventState)};
     }
 
     static get uid() {

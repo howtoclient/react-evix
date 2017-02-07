@@ -11,7 +11,7 @@ import {
 export default class EventListener {
     constructor(listenerUid, onRemoveCallback) {
         this.listenerUid = listenerUid;
-        this._onRemoveCallback = onRemoveCallback || (()=>undefined);
+        this._onRemoveCallback = onRemoveCallback;
     }
 
     remove() {
@@ -19,21 +19,15 @@ export default class EventListener {
             return;
         }
         removeEventListenerById(this.listenerUid);
-        this._onRemoveCallback();
-        this.onRemoved(this);
-        this.onAction(this);
+        this._onRemoveCallback && this._onRemoveCallback();
     }
 
     suspend() {
         suspendEventListenerById(this.listenerUid);
-        this.onSuspend(this);
-        this.onAction(this);
     }
 
     restore() {
         restoreEventListenerById(this.listenerUid);
-        this.onRestore(this);
-        this.onAction(this);
     }
 
     isSuspended() {
@@ -42,18 +36,5 @@ export default class EventListener {
 
     isRemoved() {
         return !listenerExists(this.listenerUid);
-    }
-
-    onSuspend() {
-    }
-
-    onRestore() {
-    }
-
-    onRemoved() {
-    }
-
-    onAction() {
-
     }
 }
