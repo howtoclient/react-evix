@@ -9,7 +9,8 @@
     "prepublish": "npm t && npm run build -s",
     "patch": "npm version patch && npm publish",
     "minor": "npm version minor && npm publish",
-    "major": "npm version major && npm publish"
+    "major": "npm version major && npm publish",
+    "semantic-release": "semantic-release pre && npm publish && semantic-release post"
   },
   "repository": {
     "type": "git",
@@ -37,7 +38,8 @@
     "jest-cli": "18.0.0",
     "react": "^15.0.0",
     "react-dom": "^15.0.0",
-    "react-test-renderer": "^15.0.0"
+    "react-test-renderer": "^15.0.0",
+    "semantic-release": "^6.3.2"
   },
   "author": {
     "name": "Vladimir Volchkov",
