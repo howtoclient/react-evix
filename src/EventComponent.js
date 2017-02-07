@@ -3,9 +3,7 @@
  */
 import React from 'react';
 import {
-    getUid,
     BasicEvent,
-    filterRemovedListeners,
     addEventListener,
     listenerExists,
     removeEventListenersByType,
@@ -13,12 +11,10 @@ import {
     systemRestoreEventListenerById
 } from './EventsControl';
 import EventListener from './EventListener';
-const updateEventList = () => {
-    this.__listenersList =
-        filterRemovedListeners(
-            this.__listenersList
-        );
+const filterRemovedEvents = (componentListenersList) => {
+    return componentListenersList.filter(listener => listenerExists(listener.listenerUid));
 };
+
 export default class EventComponent extends React.Component {
     constructor(props) {
         super(props);
@@ -29,14 +25,16 @@ export default class EventComponent extends React.Component {
         this.__componentWillMount = this.componentWillMount;
         this.componentWillUnmount = this._componentWillUnmount;
         this.componentWillMount = this._componentWillMount;
-        this.trackEvents && this.trackEvents.length && this.trackEvents.forEach(
+        this.constructor.trackEvents &&
+        this.constructor.trackEvents.length &&
+        this.constructor.trackEvents.forEach(
             event => this.trackEventState(event)
         )
     }
 
     _componentWillMount() {
         this.__mounted = true;
-        this.__listenersList = filterRemovedListeners(this.__listenersList).filter(
+        this.__listenersList = filterRemovedEvents(this.__listenersList).filter(
             ({suspendOnUnMount, listenerUid}) => (
                 !suspendOnUnMount || systemRestoreEventListenerById(listenerUid)
             )
@@ -49,7 +47,7 @@ export default class EventComponent extends React.Component {
 
     _componentWillUnmount() {
         this.__mounted = false;
-        this.__listenersList = filterRemovedListeners(this.__listenersList).filter(
+        this.__listenersList = filterRemovedEvents(this.__listenersList).filter(
             ({suspendOnUnMount, listenerUid}) => (
                 !suspendOnUnMount || systemSuspendEventListenerById(listenerUid)
             )
@@ -83,7 +81,7 @@ export default class EventComponent extends React.Component {
                 _onStateUpdate: true,
                 _active: this.__mounted,
                 _eventUid: event.uid,
-                _handler: handler
+                _handler: () => this.forceUpdate()
             })
         )
     }
@@ -94,8 +92,8 @@ export default class EventComponent extends React.Component {
 
     addEventListener(event, handler, suspendOnUnMount = false, onStateUpdated) {
         if (!event || !handler || !BasicEvent.isPrototypeOf(event)) {
-            console.warn(this, "Missing or false parameters on addEventListener!");
-            return {};
+            console.warn("Missing or false parameters on addEventListener!");
+            return null;
         }
         const listenerUid = addEventListener({
             _onStateUpdate: !!onStateUpdated,
@@ -105,33 +103,33 @@ export default class EventComponent extends React.Component {
         });
         this.__listenersList.push({
             listenerUid: listenerUid,
-            eventUid: event._uid,
+            eventUid: event.uid,
             suspendOnUnMount: !!suspendOnUnMount
         });
         return new EventListener(
             listenerUid,
-            updateEventList.bind(this)
+            () => {
+                this.__listenersList = filterRemovedEvents(this.__listenersList);
+            }
         );
     }
 
     removeEventListener(mixed) {
-        if (typeof mixed !== 'object') {
-            return;
-        }
         if (BasicEvent.isPrototypeOf(mixed)) {
             removeEventListenersByType(
-                mixed._uid,
+                mixed.uid,
                 this.__listenersList.filter(
                     ({eventUid, listenerUid}) => (
-                        eventUid === mixed._uid && listenerExists(listenerUid)
+                        eventUid === mixed.uid && listenerExists(listenerUid)
                     )
                 ).map(
                     ({listenerUid}) => listenerUid
                 )
             );
-            updateEventList.call(this);
+            return this.__listenersList = filterRemovedEvents(this.__listenersList);
         }
-        if (mixed instanceof EventListener && this.__listenersList.indexOf(mixed.listenerUid) > -1) {
+
+        if (mixed instanceof EventListener && this.__listenersList.some(listener => listener.listenerUid == mixed.listenerUid)) {
             mixed.remove();
         }
     }
