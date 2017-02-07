@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/howtoclient/react-evix.svg?branch=master)](https://travis-ci.org/howtoclient/react-evix)
 ## Evix library
 A simpler way to work with stores events and react.
 
