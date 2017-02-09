@@ -57,6 +57,13 @@ export default class Event extends BasicEvent {
         return {...this._data};
     }
 
+    updateEventData(newData) {
+        if (typeof newData === 'object') {
+            this._data = {...this._data, ...newData};
+        }
+        return this.eventData;
+    }
+
     dispatch() {
         if (this.constructor.prototype._isDispatching) {
             throw new EventException("Event-ception - (Event fired withing itself) detected at:" + this.constructor.name);

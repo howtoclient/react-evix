@@ -264,6 +264,13 @@ test('Test basic Event functionality', () => {
     expect(newTestEvent.eventData).toEqual({stateVariable: "updatedStateVariable"});
     expect((newTestEvent).dispatch().eventState).toEqual({stateVariable: "updatedStateVariable"});
     expect(TestEvent.eventState).toEqual({stateVariable: "updatedStateVariable"});
+
+    const newTestEvent2 = new TestEvent({stateVariable: "updatedStateVariableData"});
+    expect(newTestEvent2.eventData).toEqual({stateVariable: "updatedStateVariableData"});
+    expect(newTestEvent2.updateEventData()).toEqual({stateVariable: "updatedStateVariableData"});
+    expect(newTestEvent2.updateEventData({stateVariable: null})).toEqual({stateVariable: null});
+    expect((newTestEvent2).dispatch().eventState).toEqual({stateVariable: null});
+    expect(TestEvent.eventState).toEqual({stateVariable: null});
 });
 
 test('Test basic Event Initial functionality [uid]', () => {
