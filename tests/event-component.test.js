@@ -40,7 +40,7 @@ test('initial tests', () => {
 
 test('EventComponent trackEvents test', () => {
     class MyEventComponent extends EventComponent {
-        static trackEvents = [
+        trackEvents = [
             MyEventOne, MyEventTwo, MyEventOne
         ];
 
@@ -195,7 +195,7 @@ test('EventComponent autoSuspend tests', () => {
     let eventStateHandlerAuto = jest.fn();
 
     class MyEventComponent extends EventComponent {
-        static trackEvents = [
+        trackEvents = [
             MyEventOne, MyEventOne, MyEventTwo
         ];
 
