@@ -1,6 +1,6 @@
 {
   "name": "react-evix",
-  "version": "0.6.9",
+  "version": "0.6.10",
   "description": "React events that act like a store",
   "main": "lib/index.js",
   "scripts": {

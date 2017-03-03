@@ -61,7 +61,7 @@ export default class Event extends BasicEvent {
         if (typeof newData === 'object') {
             this._data = {...this._data, ...newData};
         }
-        return this.eventData;
+        return this;
     }
 
     dispatch() {
