@@ -207,6 +207,7 @@ test('EventComponent autoSuspend tests', () => {
     const component = renderer.create(
         <MyEventComponent />);
     let myEventComponent = component.getInstance();
+    myEventComponent.componentDidMount();
     expect(myEventComponent.__mounted).toBe(true);
     expect(eventRenderTest).toHaveBeenCalledTimes(1);
 
@@ -257,7 +258,7 @@ test('EventComponent autoSuspend tests', () => {
     expect(eventStateHandlerAuto).toHaveBeenCalledTimes(1);
 
 
-    myEventComponent.componentWillMount();
+    myEventComponent.componentDidMount();
     expect(myEventComponent.__mounted).toBe(true);
     expect(eventRenderTest).toHaveBeenCalledTimes(3);
 

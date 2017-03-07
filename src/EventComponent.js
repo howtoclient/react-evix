@@ -22,9 +22,9 @@ export default class EventComponent extends React.Component {
         this.__listenersList = [];
         this.__stateTrackers = {};
         this.__componentWillUnmount = this.componentWillUnmount;
-        this.__componentWillMount = this.componentWillMount;
+        this.__componentDidMount = this.componentDidMount;
         this.componentWillUnmount = this._componentWillUnmount;
-        this.componentWillMount = this._componentWillMount;
+        this.componentDidMount = this._componentDidMount;
     }
 
     set trackEvents(events) {
@@ -36,7 +36,7 @@ export default class EventComponent extends React.Component {
     get trackEvents() {
     }
 
-    _componentWillMount() {
+    _componentDidMount() {
         this.__mounted = true;
         this.__listenersList = filterRemovedEvents(this.__listenersList).filter(
             ({suspendOnUnMount, listenerUid}) => (
@@ -46,7 +46,7 @@ export default class EventComponent extends React.Component {
         for (let key in this.__stateTrackers) {
             this.__stateTrackers[key].restore();
         }
-        this.__componentWillMount && this.__componentWillMount();
+        this.__componentDidMount && this.__componentDidMount();
     }
 
     _componentWillUnmount() {
