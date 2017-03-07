@@ -7,6 +7,8 @@ Use event constructor as the Store and avoid reducers and renders overhead.
 
 Share and access eventStores easily while keeping full compatibility with Redux and Mobx.
 
+[Examples - https://github.com/howtoclient/react-evix](https://github.com/howtoclient/react-evix)
+
 ## Table of Contents
 
 - [Installation](#installation)
