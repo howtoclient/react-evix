@@ -207,7 +207,6 @@ test('EventComponent autoSuspend tests', () => {
     const component = renderer.create(
         <MyEventComponent />);
     let myEventComponent = component.getInstance();
-    myEventComponent.componentDidMount();
     expect(myEventComponent.__mounted).toBe(true);
     expect(eventRenderTest).toHaveBeenCalledTimes(1);
 
@@ -258,6 +257,7 @@ test('EventComponent autoSuspend tests', () => {
     expect(eventStateHandlerAuto).toHaveBeenCalledTimes(1);
 
 
+    myEventComponent.componentWillMount();
     myEventComponent.componentDidMount();
     expect(myEventComponent.__mounted).toBe(true);
     expect(eventRenderTest).toHaveBeenCalledTimes(3);
@@ -307,3 +307,32 @@ test('EventComponent autoSuspend tests', () => {
     expect(__testGetCurrentListenerRegistry()).toEqual({});
     expect(__testGetCurrentDispatchRegistry()).toEqual({});
 });
+
+test('EventComponent dispatch between willMount and DidMout reRender test', () => {
+    let ReadyEventRenderTest = jest.fn();
+    class InnerComponent extends React.Component {
+        constructor(props) {
+            super(props);
+            (new MyEventOne({myEventOneValue: 123})).dispatch()
+        }
+
+        render() {
+            return (<span/>)
+        }
+    }
+    class MyEventComponent extends EventComponent {
+        trackEvents = [
+            MyEventOne, MyEventOne, MyEventTwo
+        ];
+
+        render() {
+            ReadyEventRenderTest();
+            return (<div>
+                <InnerComponent />
+            </div>)
+        }
+    }
+    const component = renderer.create(<MyEventComponent />);
+
+    expect(ReadyEventRenderTest).toHaveBeenCalledTimes(2);
+})

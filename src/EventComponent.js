@@ -19,11 +19,15 @@ export default class EventComponent extends React.Component {
     constructor(props) {
         super(props);
         this.__mounted = false;
+        this.__rendered = false;
+        this.__reRenderOnMount = false;
         this.__listenersList = [];
         this.__stateTrackers = {};
         this.__componentWillUnmount = this.componentWillUnmount;
+        this.__componentWillMount = this.componentWillMount;
         this.__componentDidMount = this.componentDidMount;
         this.componentWillUnmount = this._componentWillUnmount;
+        this.componentWillMount = this._componentWillMount;
         this.componentDidMount = this._componentDidMount;
     }
 
@@ -37,6 +41,15 @@ export default class EventComponent extends React.Component {
     }
 
     _componentDidMount() {
+        this.__rendered = true;
+        if (this.__reRenderOnMount) {
+            this.__reRenderOnMount = false;
+            this.forceUpdate();
+        }
+        this.__componentDidMount && this.__componentDidMount();
+    }
+
+    _componentWillMount() {
         this.__mounted = true;
         this.__listenersList = filterRemovedEvents(this.__listenersList).filter(
             ({suspendOnUnMount, listenerUid}) => (
@@ -46,11 +59,11 @@ export default class EventComponent extends React.Component {
         for (let key in this.__stateTrackers) {
             this.__stateTrackers[key].restore();
         }
-        this.__componentDidMount && this.__componentDidMount();
+        this.__componentWillMount && this.__componentWillMount();
     }
 
     _componentWillUnmount() {
-        this.__mounted = false;
+        this.__rendered = this.__reRenderOnMount = this.__mounted = false;
         this.__listenersList = filterRemovedEvents(this.__listenersList).filter(
             ({suspendOnUnMount, listenerUid}) => (
                 !suspendOnUnMount || systemSuspendEventListenerById(listenerUid)
@@ -85,7 +98,13 @@ export default class EventComponent extends React.Component {
                 _onStateUpdate: true,
                 _active: this.__mounted,
                 _eventUid: event.uid,
-                _handler: () => this.forceUpdate()
+                _handler: () => {
+                    if (this.__rendered) {
+                        this.forceUpdate()
+                    } else {
+                        this.__reRenderOnMount = true;
+                    }
+                }
             })
         )
     }
