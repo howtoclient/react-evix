@@ -25,7 +25,7 @@ const ListenerRegistry = {},
     };
 export const __testGetEventListenerRegistry = () => typeof __JEST_TEST__ != 'undefined' && ListenerRegistry;
 export default class Event extends BasicEvent {
-    constructor(eventData) {
+    constructor(eventData = {}, payload = {}) {
         super();
         //i don't want to keep the event prototype or constructor for comparing i will create unique id per constructor
         this.constructor.prototype._uid =
@@ -34,7 +34,8 @@ export default class Event extends BasicEvent {
             this.constructor.prototype._eventState || {...(this.constructor.defaultEventState || {})};
         this.constructor.prototype._isDispatching =
             this.constructor.prototype._isDispatching === undefined ? false : this.constructor.prototype._isDispatching;
-        this._data = {...(eventData || {})};
+        this._data = {...eventData};
+        this._payload = {...payload};
         //remove references from Instances
         this.clearAllDirectEvents =
             this.onEventStateUpdated =
@@ -55,6 +56,10 @@ export default class Event extends BasicEvent {
 
     get eventData() {
         return {...this._data};
+    }
+
+    get payload() {
+        return {...this._payload};
     }
 
     updateEventData(newData) {

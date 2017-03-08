@@ -222,6 +222,8 @@ test('Test Event dispatch functionality', () => {
     expect(standardCallback).toBeCalledWith(testDispatcher);
     expect(onEventStateUpdateCallback).not.toHaveBeenCalled();
 
+    const testPayloadDispatcher = new TestEvent(null, {payload_test:"payload_test"});
+    expect(testPayloadDispatcher.payload).toEqual({payload_test:"payload_test"});
 
     expect(testStateDispatcher.dispatch().eventState).toEqual({
         stateVariable: "updatedStateVariable"

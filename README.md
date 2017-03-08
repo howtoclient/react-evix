@@ -73,6 +73,9 @@ Dispatching events is simple, create new extended Event with new state, same as 
         {
             myStateVariable : 1
             myNewStateVariable : 123
+        },
+        {
+            payload:"payload"
         }
     ).dispatch();
 ```
@@ -84,6 +87,12 @@ The new ```MyEvent.eventState``` will be
     }
 ```
 *Note Works the same way ```React.setState``` does. Extends the existing eventState with the new data.
+The new ```MyEvent.payload``` will be
+```
+    {
+        payload:"payload"
+    }
+```
 
 ## Updating Event State
 You cant manually update ```.eventState```, that would trigger no events and things will go out of sync.
@@ -158,6 +167,7 @@ Returns:
 - ```EventListener``` instance.
 
 Example:
+
 ```
     import Evix,{Event,EventComponent} from 'react-evix';
     import MyEvent from './events/MyEvent'; //or wherever you placed it
@@ -170,6 +180,7 @@ Example:
                     MyEvent ,
                     (event) => {
                         do the thing!
+                        //event.payload is a way to access the payload :)
                     },
                     true );
         }
@@ -185,6 +196,7 @@ As it sounds, removed a specific event or a whole group of them by type.
 Receives:
 - instance of ```EventListener``` OR instance of extended Event OR extended Event constructor
 Example:
+
 ```
     import Evix,{Event,EventComponent} from 'react-evix';
     import MyEvent from './events/MyEvent'; //or wherever you placed it
@@ -207,7 +219,7 @@ Example:
             );
         }
     }
-    ```
+```
 *NOTE: All the event functions are Instance controlled so you cant remove events from other Instances( use ```EventListener.remove()``` )
 
 ## Automatically Updating Event Component
@@ -218,6 +230,7 @@ Receives:
 - extended Event instance or constructor ( doesn't matter )
 
 Example:
+
 ```
     import Evix,{Event,EventComponent} from 'react-evix';
     import MyEvent from './events/MyEvent'; //or wherever you placed it
@@ -241,6 +254,7 @@ Receives:
 - extended Event instance or constructor ( doesn't matter )
 
 Example:
+
 ```
     import Evix,{Event,EventComponent} from 'react-evix';
     import MyEvent from './events/MyEvent'; //or wherever you placed it
@@ -260,6 +274,7 @@ Example:
 
 ```this.unTrackAll()``` - removes ALL ```eventState``` trackers
 Example:
+
 ```
     import Evix,{Event,EventComponent} from 'react-evix';
     import MyEvent from './events/MyEvent'; //or wherever you placed it
