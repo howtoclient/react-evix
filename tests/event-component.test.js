@@ -6,7 +6,8 @@ import renderer from 'react-test-renderer';
 import {
     __testGetCurrentUid,
     __testGetCurrentListenerRegistry,
-    __testGetCurrentDispatchRegistry
+    __testGetCurrentDispatchRegistry,
+    DEFAULT_FILTER
 } from '../src/EventsControl';
 import EventComponent from "../src/EventComponent"
 import Event from "../src/Event"
@@ -16,7 +17,10 @@ const noop = () => undefined,
         _onStateUpdate: !!onStateUpdate,
         _active: !!active,
         _eventUid: uid,
-        _handler: handler === undefined ? noop : handler
+        _handler: handler === undefined ? noop : handler,
+        _filters:{
+            [DEFAULT_FILTER]:true
+        }
     });
 class MyEventOne extends Event {
     static defaultEventState = {

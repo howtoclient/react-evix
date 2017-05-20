@@ -25,7 +25,8 @@ import {
     suspendEventListenerById,
     restoreEventListenerById,
     systemSuspendEventListenerById,
-    systemRestoreEventListenerById
+    systemRestoreEventListenerById,
+    DEFAULT_FILTER
 } from '../src/EventsControl';
 const testGlobalListenerRegistry = __testGetCurrentListenerRegistry(),
     testGlobalDispatchRegistry = __testGetCurrentDispatchRegistry(),
@@ -33,7 +34,10 @@ const testGlobalListenerRegistry = __testGetCurrentListenerRegistry(),
         _onStateUpdate: !!onStateUpdate,
         _active: !!active,
         _eventUid: uid,
-        _handler: handler === undefined ? noop : handler
+        _handler: handler === undefined ? noop : handler,
+        _filters: {
+            [DEFAULT_FILTER]: true
+        }
     });
 const noop = () => undefined;
 class TestFakeEvent {
@@ -149,11 +153,11 @@ test('helper functions test', () => {
     let testInfo = getEventListenerInfo(TestEvent.uid, false, true);
     let testInfoUpdate = getEventListenerInfo(TestEvent.uid, true, true);
 
-    expect(canFireEventHandler(testInfo, false)).toBe(true);
-    expect(canFireEventHandler(testInfoUpdate, false)).toBe(false);
+    expect(canFireEventHandler(testInfo, false, DEFAULT_FILTER)).toBe(true);
+    expect(canFireEventHandler(testInfoUpdate, false, DEFAULT_FILTER)).toBe(false);
 
-    expect(canFireEventHandler(testInfo, true)).toBe(true);
-    expect(canFireEventHandler(testInfoUpdate, true)).toBe(true);
+    expect(canFireEventHandler(testInfo, true, DEFAULT_FILTER)).toBe(true);
+    expect(canFireEventHandler(testInfoUpdate, true, DEFAULT_FILTER)).toBe(true);
 });
 
 test('test suspend/restore/systemSuspend/systemRestore', () => {

@@ -8,7 +8,8 @@ import {
     EventException,
     __testGetCurrentUid,
     __testGetCurrentListenerRegistry,
-    __testGetCurrentDispatchRegistry
+    __testGetCurrentDispatchRegistry,
+    DEFAULT_FILTER
 } from '../src/EventsControl';
 const noop = () => undefined;
 
@@ -19,7 +20,10 @@ const testEventListenerRegistry = __testGetEventListenerRegistry(),
         _onStateUpdate: !!onStateUpdate,
         _active: true,
         _eventUid: uid,
-        _handler: noop
+        _handler: noop,
+        _filters:{
+            [DEFAULT_FILTER]:true
+        }
     });
 test('initial tests', () => {
     expect(__testGetCurrentUid()).toEqual(0);

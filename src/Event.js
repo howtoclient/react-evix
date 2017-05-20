@@ -12,6 +12,7 @@ import {
     filterRemovedListeners,
     isEventStateUpdated,
     EventException,
+    DEFAULT_FILTER
 } from './EventsControl';
 const ListenerRegistry = {},
     updateEventList = (uid) => {
@@ -69,7 +70,7 @@ export default class Event extends BasicEvent {
         return this;
     }
 
-    dispatch() {
+    dispatch(type) {
         if (this.constructor.prototype._isDispatching) {
             throw new EventException("Event-ception - (Event fired withing itself) detected at:" + this.constructor.name);
         }
@@ -79,7 +80,7 @@ export default class Event extends BasicEvent {
             this.constructor.prototype._eventState =
                 Object.assign(this.constructor.prototype._eventState, this._data);
         }
-        dispatchEvent(this, eventStateUpdate);
+        dispatchEvent(this, eventStateUpdate, type);
         this.constructor.prototype._isDispatching = false;
         return this;
     }
