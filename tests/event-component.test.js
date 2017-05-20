@@ -18,9 +18,8 @@ const noop = () => undefined,
         _active: !!active,
         _eventUid: uid,
         _handler: handler === undefined ? noop : handler,
-        _filters:{
-            [DEFAULT_FILTER]:true
-        }
+        _isFiltered : false,
+        _filters:{}
     });
 class MyEventOne extends Event {
     static defaultEventState = {

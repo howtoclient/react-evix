@@ -21,9 +21,8 @@ const testEventListenerRegistry = __testGetEventListenerRegistry(),
         _active: true,
         _eventUid: uid,
         _handler: noop,
-        _filters:{
-            [DEFAULT_FILTER]:true
-        }
+        _isFiltered: false,
+        _filters: {}
     });
 test('initial tests', () => {
     expect(__testGetCurrentUid()).toEqual(0);
@@ -226,8 +225,8 @@ test('Test Event dispatch functionality', () => {
     expect(standardCallback).toBeCalledWith(testDispatcher);
     expect(onEventStateUpdateCallback).not.toHaveBeenCalled();
 
-    const testPayloadDispatcher = new TestEvent(null, {payload_test:"payload_test"});
-    expect(testPayloadDispatcher.payload).toEqual({payload_test:"payload_test"});
+    const testPayloadDispatcher = new TestEvent(null, {payload_test: "payload_test"});
+    expect(testPayloadDispatcher.payload).toEqual({payload_test: "payload_test"});
 
     expect(testStateDispatcher.dispatch().eventState).toEqual({
         stateVariable: "updatedStateVariable"

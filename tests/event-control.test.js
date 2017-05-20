@@ -35,9 +35,8 @@ const testGlobalListenerRegistry = __testGetCurrentListenerRegistry(),
         _active: !!active,
         _eventUid: uid,
         _handler: handler === undefined ? noop : handler,
-        _filters: {
-            [DEFAULT_FILTER]: true
-        }
+        _isFiltered: false,
+        _filters: {}
     });
 const noop = () => undefined;
 class TestFakeEvent {
