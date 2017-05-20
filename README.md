@@ -122,7 +122,9 @@ You can then Remove or Suspend your event handler whenever you want
         do the thing!
     });
 
-
+    myEventListener.filter('bread'); // will only trigger if (new MyEvent()).dispatch('bread') is fired
+    myEventListener.unFilter(); // removed all filters
+    myEventListener.unFilter('bread'); // removes only the specified filter
     myEventListener.suspend(); // Puts the event handler to 'sleep' mode.
     myEventListener.restore(); // Wakes the event handler to catch all dem events!
     myEventListener.remove();  // Removes the event handler completly (cant be restored)
@@ -302,6 +304,8 @@ After you subscribe to event dispatcher using one of the addEventListeners you w
 - ```EventListener.suspend()``` - pause event listener without removing it
 - ```EventListener.restore()``` - resume existing event listener
 - ```EventListener.remove()``` - remove event listener
+- ```EventListener.filter(string/array)``` - add filtering for this event listener
+- ```EventListener.unFilter(string/array)``` - remove filtering for this event listener
 - ```EventListener.isSuspended()``` - returns event listener activity status
 - ```EventListener.isRemoved()``` - returns event listener activity status
 - ```EventListener.onAction()``` - empty function called when ```.suspend() or .restore() or .remove()``` are called ( mainly for debugging )
@@ -331,10 +335,16 @@ variables:
 - ```.uid - {String}``` - unique ID of the event type ```MyEvent.uid``` or ```(new MyEvent()).uid)```
 
 methods:
-- ```.dispatch()``` - dispatches current event and updated the shared ```eventState```
+- ```.dispatch(type)``` - dispatches with [type]*optional current event and updated the shared ```eventState```
 ```
     const fireEvent = (eventData)=>{
+        //will trigger all unfiltered events
         (new MyEvent({eventData})).dispatch()
+    }
+    OR
+    const fireEvent = (eventData)=>{
+            //will trigger all unfiltered events and filtered by 'bread'
+            (new MyEvent({eventData})).dispatch("bread")
     }
 ```
 
