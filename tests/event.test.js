@@ -440,3 +440,34 @@ test('Test Extended Event Instance definitions', () => {
     expect(newEvent.onEventStateUpdated).toBe(undefined);
     expect(newEvent.dispatch).not.toBe(undefined);
 });
+
+test('Test Event dispatch filter functionality', () => {
+    class TestEvent extends Event {
+        static defaultEventState = {
+            stateVariable: "stateVariable"
+        }
+    }
+    let filteredCallback = jest.fn();
+    const listener = TestEvent.addEventListener(filteredCallback);
+
+    (new TestEvent()).dispatch();
+    expect(filteredCallback).toHaveBeenCalled();
+
+    (new TestEvent()).dispatch("test-type");
+    expect(filteredCallback).toHaveBeenCalledTimes(2);
+
+    listener.filter("test");
+    (new TestEvent()).dispatch();
+    (new TestEvent()).dispatch("test-type");
+    expect(filteredCallback).toHaveBeenCalledTimes(2);
+
+    (new TestEvent()).dispatch("test");
+    expect(filteredCallback).toHaveBeenCalledTimes(3);
+
+    listener.unFilter();
+    (new TestEvent()).dispatch();
+    (new TestEvent()).dispatch("test");
+    (new TestEvent()).dispatch("test-type");
+    expect(filteredCallback).toHaveBeenCalledTimes(6);
+
+});

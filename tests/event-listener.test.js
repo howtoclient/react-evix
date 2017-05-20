@@ -9,7 +9,7 @@ import {
     __testGetCurrentDispatchRegistry
 } from '../src/EventsControl';
 const noop = () => undefined;
-const getTestRegisty = (isFiltered,filters) => {
+const getTestRegisty = (isFiltered, filters) => {
     return {
         _active: true,
         _eventUid: 1,
@@ -76,53 +76,63 @@ test('test EventListener functionality', () => {
 
 test('test Filtering functionality', () => {
     const eventListener = TestEvent.addEventListener(noop);
-    expect(__testGetCurrentListenerRegistry()).toEqual({"3": getTestRegisty(false,{})});
+    expect(__testGetCurrentListenerRegistry()).toEqual({"3": getTestRegisty(false, {})});
 
 
     eventListener.filter("test");
     expect(__testGetCurrentListenerRegistry()).toEqual({
-        "3": getTestRegisty(true,{
+        "3": getTestRegisty(true, {
             test: true
         })
     });
     eventListener.filter("test2");
     expect(__testGetCurrentListenerRegistry()).toEqual({
-        "3": getTestRegisty(true,{
+        "3": getTestRegisty(true, {
             test: true,
             test2: true,
         })
     });
 
     eventListener.unFilter("test2");
+    eventListener.unFilter("test3");
     expect(__testGetCurrentListenerRegistry()).toEqual({
-        "3": getTestRegisty(true,{
+        "3": getTestRegisty(true, {
             test: true
         })
     });
 
     eventListener.unFilter("test");
-    expect(__testGetCurrentListenerRegistry()).toEqual({"3": getTestRegisty(false,{})});
+    expect(__testGetCurrentListenerRegistry()).toEqual({"3": getTestRegisty(false, {})});
 
-    eventListener.filter(["test","test2"]);
-    expect(__testGetCurrentListenerRegistry()).toEqual({"3": getTestRegisty(true,{
-        test: true,
-        test2: true,
-    })});
+    eventListener.filter(["test", "test2"]);
+    expect(__testGetCurrentListenerRegistry()).toEqual({
+        "3": getTestRegisty(true, {
+            test: true,
+            test2: true,
+        })
+    });
 
-    eventListener.filter(["test3","test4"]);
-    expect(__testGetCurrentListenerRegistry()).toEqual({"3": getTestRegisty(true,{
-        test: true,
-        test2: true,
-        test3: true,
-        test4: true,
-    })});
+    eventListener.filter(["test3", "test4"]);
+    expect(__testGetCurrentListenerRegistry()).toEqual({
+        "3": getTestRegisty(true, {
+            test: true,
+            test2: true,
+            test3: true,
+            test4: true,
+        })
+    });
 
-    eventListener.unFilter(["test","test4"]);
-    expect(__testGetCurrentListenerRegistry()).toEqual({"3": getTestRegisty(true,{
-        test2: true,
-        test3: true
-    })});
+    eventListener.unFilter(["test", "test4", "test5"]);
+    expect(__testGetCurrentListenerRegistry()).toEqual({
+        "3": getTestRegisty(true, {
+            test2: true,
+            test3: true
+        })
+    });
 
     eventListener.unFilter();
-    expect(__testGetCurrentListenerRegistry()).toEqual({"3": getTestRegisty(false,{})});
+    expect(__testGetCurrentListenerRegistry()).toEqual({"3": getTestRegisty(false, {})});
+
+    eventListener.filter(["test", "test2"]).unFilter(["test", "test2","test3"]);
+    expect(__testGetCurrentListenerRegistry()).toEqual({"3": getTestRegisty(false, {})});
 });
