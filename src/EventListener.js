@@ -6,12 +6,33 @@ import {
     suspendEventListenerById,
     restoreEventListenerById,
     isListenerSuspended,
-    listenerExists
+    listenerExists,
+    addTypeFilter,
+    addTypeFilters,
+    resetTypeFilter,
+    removeTypeFilter,
+    removeTypeFilters
 } from './EventsControl';
 export default class EventListener {
     constructor(listenerUid, onRemoveCallback) {
         this.listenerUid = listenerUid;
         this._onRemoveCallback = onRemoveCallback;
+    }
+
+    filter(mixed) {
+        if (mixed) {
+            Array.isArray(mixed) ? addTypeFilters(this.listenerUid, mixed) : addTypeFilter(this.listenerUid, mixed)
+        }
+        return this;
+    }
+
+    unFilter(mixed) {
+        if (mixed) {
+            Array.isArray(mixed) ? removeTypeFilters(this.listenerUid, mixed) : removeTypeFilter(this.listenerUid, mixed)
+        } else {
+            resetTypeFilter(this.listenerUid);
+        }
+        return this;
     }
 
     remove() {
@@ -20,14 +41,17 @@ export default class EventListener {
         }
         removeEventListenerById(this.listenerUid);
         this._onRemoveCallback && this._onRemoveCallback();
+        return this;
     }
 
     suspend() {
         suspendEventListenerById(this.listenerUid);
+        return this;
     }
 
     restore() {
         restoreEventListenerById(this.listenerUid);
+        return this;
     }
 
     isSuspended() {

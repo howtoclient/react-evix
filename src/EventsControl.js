@@ -4,7 +4,7 @@
 let listenerRegistry = {};
 let dispatchRegistry = {};
 let uid = 0;
-
+export const DEFAULT_FILTER = "__DEFAULT__";
 export class BasicEvent {
 }
 export class EventException {
@@ -25,6 +25,47 @@ export const
     removeListener = listenerUid => delete listenerRegistry[listenerUid],
     getListenerType = listenerUid => listenerExists(listenerUid) && listenerRegistry[listenerUid]._eventUid,
     filterRemovedListeners = listenerList => listenerList.filter(listenerUid => listenerExists(listenerUid)),
+    resetTypeFilter = (listenerUid) => {
+        listenerRegistry[listenerUid]._filters = {};
+        listenerRegistry[listenerUid]._isFiltered = false;
+    },
+    addTypeFilter = (listenerUid, type) => {
+        listenerRegistry[listenerUid]._filters[type] = true;
+        listenerRegistry[listenerUid]._isFiltered = true;
+    },
+    addTypeFilters = (listenerUid, types) => {
+        listenerRegistry[listenerUid]._filters = types.reduce(
+            (filters, type) => {
+                filters[type] = true;
+                return filters;
+            },
+            listenerRegistry[listenerUid]._filters
+        );
+        listenerRegistry[listenerUid]._isFiltered = true;
+    },
+    removeTypeFilter = (listenerUid, type) => {
+        const filters = listenerRegistry[listenerUid]._filters;
+        if (!filters[type]) {
+            return;
+        }
+        if (Object.keys(filters).length > 1) {
+            delete listenerRegistry[listenerUid]._filters[type];
+        } else {
+            resetTypeFilter(listenerUid);
+        }
+    },
+    removeTypeFilters = (listenerUid, types) => {
+        let filters = listenerRegistry[listenerUid]._filters;
+        filters = types.reduce((filters, type) => {
+            delete filters[type];
+            return filters;
+        }, filters);
+        if (Object.keys(filters).length) {
+            listenerRegistry[listenerUid]._filters = filters;
+        } else {
+            resetTypeFilter(listenerUid);
+        }
+    },
     isEventStateUpdated = (eventState, data) => {
         const dataKeys = Object.keys(data);
         return dataKeys && dataKeys.some(
@@ -46,22 +87,26 @@ export const
         }
         const eventUid = eventInfo._eventUid,
             listenerUid = getUid();
-        listenerRegistry[listenerUid] = eventInfo;
+        listenerRegistry[listenerUid] = {
+            ...eventInfo,
+            _isFiltered: false,
+            _filters: {}
+        };
         dispatchRegistry[eventUid] = dispatchRegistry[eventUid] || [];
         dispatchRegistry[eventUid].push(listenerUid);
         return listenerUid;
     },
-    canFireEventHandler = (listenerInfo, stateUpdated) => {
-        return listenerInfo._active && (stateUpdated || !listenerInfo._onStateUpdate);
+    canFireEventHandler = (listenerInfo, stateUpdated, type) => {
+        return listenerInfo._active && (stateUpdated || !listenerInfo._onStateUpdate) && (!listenerInfo._isFiltered || listenerInfo._filters[type]);
     },
-    dispatchEvent = (event, stateUpdated = false) => {
+    dispatchEvent = (event, stateUpdated = false, type = DEFAULT_FILTER) => {
         if (!BasicEvent.isPrototypeOf(event.constructor) || !dispatchRegistryExists(event.uid)) {
             return;
         }
 
         dispatchRegistry[event.uid].forEach(listenerUid => {
             const listenerInfo = listenerRegistry[listenerUid];
-            listenerInfo && canFireEventHandler(listenerInfo, stateUpdated) && listenerInfo._handler(event);
+            listenerInfo && canFireEventHandler(listenerInfo, stateUpdated, type) && listenerInfo._handler(event);
         });
     },
     removeEventListenersByType = (eventUid, listenersList) => {

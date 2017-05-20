@@ -8,7 +8,8 @@ import {
     EventException,
     __testGetCurrentUid,
     __testGetCurrentListenerRegistry,
-    __testGetCurrentDispatchRegistry
+    __testGetCurrentDispatchRegistry,
+    DEFAULT_FILTER
 } from '../src/EventsControl';
 const noop = () => undefined;
 
@@ -19,7 +20,9 @@ const testEventListenerRegistry = __testGetEventListenerRegistry(),
         _onStateUpdate: !!onStateUpdate,
         _active: true,
         _eventUid: uid,
-        _handler: noop
+        _handler: noop,
+        _isFiltered: false,
+        _filters: {}
     });
 test('initial tests', () => {
     expect(__testGetCurrentUid()).toEqual(0);
@@ -222,8 +225,8 @@ test('Test Event dispatch functionality', () => {
     expect(standardCallback).toBeCalledWith(testDispatcher);
     expect(onEventStateUpdateCallback).not.toHaveBeenCalled();
 
-    const testPayloadDispatcher = new TestEvent(null, {payload_test:"payload_test"});
-    expect(testPayloadDispatcher.payload).toEqual({payload_test:"payload_test"});
+    const testPayloadDispatcher = new TestEvent(null, {payload_test: "payload_test"});
+    expect(testPayloadDispatcher.payload).toEqual({payload_test: "payload_test"});
 
     expect(testStateDispatcher.dispatch().eventState).toEqual({
         stateVariable: "updatedStateVariable"
@@ -436,4 +439,35 @@ test('Test Extended Event Instance definitions', () => {
     expect(newEvent.clearAllDirectEvents).toBe(undefined);
     expect(newEvent.onEventStateUpdated).toBe(undefined);
     expect(newEvent.dispatch).not.toBe(undefined);
+});
+
+test('Test Event dispatch filter functionality', () => {
+    class TestEvent extends Event {
+        static defaultEventState = {
+            stateVariable: "stateVariable"
+        }
+    }
+    let filteredCallback = jest.fn();
+    const listener = TestEvent.addEventListener(filteredCallback);
+
+    (new TestEvent()).dispatch();
+    expect(filteredCallback).toHaveBeenCalled();
+
+    (new TestEvent()).dispatch("test-type");
+    expect(filteredCallback).toHaveBeenCalledTimes(2);
+
+    listener.filter("test");
+    (new TestEvent()).dispatch();
+    (new TestEvent()).dispatch("test-type");
+    expect(filteredCallback).toHaveBeenCalledTimes(2);
+
+    (new TestEvent()).dispatch("test");
+    expect(filteredCallback).toHaveBeenCalledTimes(3);
+
+    listener.unFilter();
+    (new TestEvent()).dispatch();
+    (new TestEvent()).dispatch("test");
+    (new TestEvent()).dispatch("test-type");
+    expect(filteredCallback).toHaveBeenCalledTimes(6);
+
 });
