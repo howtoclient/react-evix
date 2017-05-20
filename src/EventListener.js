@@ -23,6 +23,7 @@ export default class EventListener {
         if (mixed) {
             Array.isArray(mixed) ? addTypeFilters(this.listenerUid, mixed) : addTypeFilter(this.listenerUid, mixed)
         }
+        return this;
     }
 
     unFilter(mixed) {
@@ -31,6 +32,7 @@ export default class EventListener {
         } else {
             resetTypeFilter(this.listenerUid);
         }
+        return this;
     }
 
     remove() {
@@ -39,14 +41,17 @@ export default class EventListener {
         }
         removeEventListenerById(this.listenerUid);
         this._onRemoveCallback && this._onRemoveCallback();
+        return this;
     }
 
     suspend() {
         suspendEventListenerById(this.listenerUid);
+        return this;
     }
 
     restore() {
         restoreEventListenerById(this.listenerUid);
+        return this;
     }
 
     isSuspended() {
